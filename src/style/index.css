@@ -1,1 +1,35 @@
 @import "./tailwind.css";
+
+:root {
+  --bg: #ffffff;
+  --surface: #f7f6f3;
+  --surface-2: #f0eee8;
+  --ink: #14161f;
+  --ink-soft: #4b5160;
+  --muted: #8a8f9c;
+  --line: #e4e3dd;
+  --line-strong: #cfcec6;
+  --navy: #1c2b4a;
+  --brass: #a97a3e;
+  --navy-deep: #0f1830;
+  --brass-deep: #8a6230;
+  --brass-soft: #efe1cb;
+  --danger: #b23b2e;
+  --ok: #2f7a4f;
+}
+
+html {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  background-color: var(--bg);
+}
+
+button,
+a {
+  cursor: pointer;
+}
+
+a {
+  display: block;
+}

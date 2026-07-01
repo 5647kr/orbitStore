@@ -1,11 +1,19 @@
-import { Outlet } from "react-router";
+import { Outlet, ScrollRestoration } from "react-router";
+import Header from "../../components/Header";
+import Footer from "../../components/Footer";
 
 export default function Default() {
   return (
-    <>
-      <main>
+    <div className="flex flex-col min-h-screen bg-(--white) text-(--navy)">
+      <ScrollRestoration />
+
+      <Header />
+
+      <main className="flex-1 w-full max-w-7xl p-4 mx-auto">
         <Outlet />
       </main>
-    </>
+
+      <Footer />
+    </div>
   );
 }
