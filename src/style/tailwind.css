@@ -1,1 +1,9 @@
 @import "tailwindcss";
+
+.ibm {
+  font-family: "IBM Plex Sans";
+}
+
+.fraunces {
+  font-family: "Fraunces";
+}
