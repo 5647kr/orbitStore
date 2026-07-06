@@ -15,3 +15,10 @@ interface Product {
   amount: number;
   desc: string
 }
+
+interface Faq {
+  id: string;
+  title: string;
+  desc: string;
+  category: string
+}

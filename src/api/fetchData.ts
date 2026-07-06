@@ -2,8 +2,8 @@ import supabase from "../supabase";
 
 export async function fetchData(
   fetchType: string,
-  category: string,
-  sort: string,
+  category?: string,
+  sort?: string,
 ) {
   let url = supabase.from(fetchType).select("*");
 
