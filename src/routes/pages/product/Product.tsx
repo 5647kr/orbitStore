@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import Hero from "../../../components/Hero";
 import { fetchData } from "../../../api/fetchData";
 import { ProductSkeleton } from "../../../components/Skeleton";

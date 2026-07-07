@@ -32,3 +32,14 @@ interface InsertInquiry {
   title: string;
   desc: string;
 }
+
+interface CartList {
+  id: string;
+  img: string;
+  title: string;
+  price: number;
+  category: string;
+  aperture: string;
+  apertureRatio: string;
+  quantity: number;
+}

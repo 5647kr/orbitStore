@@ -37,8 +37,6 @@ export async function fetchOneData(fetchType: string, id: string) {
 
   if (error) throw error;
 
-  console.log(data);
-
   return data;
 }
 
