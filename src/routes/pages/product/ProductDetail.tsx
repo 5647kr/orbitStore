@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
-import { Link, useParams } from "react-router";
+import { Link, useNavigate, useParams } from "react-router";
 import { fetchOneData } from "../../../api/fetchData";
 import { ProductDetailSkeleton } from "../../../components/Skeleton";
 import { Minus, Plus } from "lucide-react";
+import { useCartStore } from "../../../store/useCartStore";
 
 export default function ProductDetail() {
   const [isLoading, setIsLoading] = useState(false);
@@ -10,6 +11,8 @@ export default function ProductDetail() {
   const [data, setData] = useState<Product>();
   const { id } = useParams();
   const [count, setCount] = useState(1);
+  const { addItem } = useCartStore();
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (!id) return;
@@ -45,6 +48,25 @@ export default function ProductDetail() {
   if (error) {
     window.alert("제품 정보를 불러올 수 없습니다.");
   }
+
+  const handleAddCart = () => {
+    addItem({
+      id: data?.id,
+      img: data?.img,
+      title: data?.title,
+      price: data?.price,
+      category: data?.category,
+      aperture: data?.aperture,
+      apertureRatio: data?.apertureRatio,
+      quantity: count,
+    });
+
+    if (window.confirm("장바구니에 담겼습니다. 장바구니로 이동하시겠습니까?")) {
+      navigate("/cart");
+    } else {
+      return;
+    }
+  };
 
   return (
     <section className="py-10">
@@ -154,6 +176,7 @@ export default function ProductDetail() {
               <button
                 type="button"
                 className="flex-1 border border-(--line) py-3.5 px-7 text-sm hover:border-(--brass) hover:text-(--brass)"
+                onClick={handleAddCart}
               >
                 장바구니
               </button>
