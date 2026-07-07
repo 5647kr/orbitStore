@@ -8,7 +8,7 @@ import Compare from "./routes/pages/compare/Compare";
 import Event from "./routes/pages/event/Event";
 import EventDetail from "./routes/pages/event/Event.Detail";
 import Faq from "./routes/pages/faq/Faq";
-import Contact from "./routes/pages/contact/Contact";
+import Inquiry from "./routes/pages/inquiry/Inquiry";
 
 const router = createBrowserRouter([
   {
@@ -23,7 +23,7 @@ const router = createBrowserRouter([
       { path: "/event", Component: Event },
       { path: "/event/:id", Component: EventDetail },
       { path: "/faq", Component: Faq },
-      { path: "/contact", Component: Contact },
+      { path: "/inquiry", Component: Inquiry },
     ],
   },
 ]);

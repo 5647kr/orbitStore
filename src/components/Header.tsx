@@ -84,7 +84,7 @@ export default function Header() {
             </li>
             <li className="border-b border-(--line) lg:border-b-0 p-5 lg:p-0">
               <NavLink
-                to="/contact"
+                to="/inquiry"
                 className={({ isActive }) =>
                   `py-2.5 px-5 text-(--navy) text-sm lg:hover:border-b-2 hover:border-(--brass) ${isActive ? "border-l-2 lg:border-b-2 lg:border-l-0 border-(--brass)" : "border-l-0 border-b-0"}`
                 }
