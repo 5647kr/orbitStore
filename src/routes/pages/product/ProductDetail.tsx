@@ -4,6 +4,7 @@ import { fetchOneData } from "../../../api/fetchData";
 import { ProductDetailSkeleton } from "../../../components/Skeleton";
 import { Minus, Plus } from "lucide-react";
 import { useCartStore } from "../../../store/useCartStore";
+import { useCheckoutStore } from "../../../store/useCheckoutStore";
 
 export default function ProductDetail() {
   const [isLoading, setIsLoading] = useState(false);
@@ -12,6 +13,7 @@ export default function ProductDetail() {
   const { id } = useParams();
   const [count, setCount] = useState(1);
   const { addItem } = useCartStore();
+  const { setOrderItem } = useCheckoutStore();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -66,6 +68,23 @@ export default function ProductDetail() {
     } else {
       return;
     }
+  };
+
+  const handleCheckout = () => {
+    setOrderItem([
+      {
+        id: data?.id,
+        img: data?.img,
+        title: data?.title,
+        price: data?.price,
+        category: data?.category,
+        aperture: data?.aperture,
+        apertureRatio: data?.apertureRatio,
+        quantity: count,
+      },
+    ]);
+
+    navigate("/checkout");
   };
 
   return (
@@ -182,6 +201,7 @@ export default function ProductDetail() {
               </button>
               <button
                 type="button"
+                onClick={handleCheckout}
                 className="flex-1 border border-(--brass) bg-(--brass) text-(--bg) py-3.5 px-7 text-sm"
               >
                 바로 구매

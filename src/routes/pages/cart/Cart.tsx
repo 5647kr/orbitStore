@@ -3,9 +3,11 @@ import Hero from "../../../components/Hero";
 import { useCartStore } from "../../../store/useCartStore";
 import { Minus, Plus } from "lucide-react";
 import { useMemo } from "react";
+import { useCheckoutStore } from "../../../store/useCheckoutStore";
 
 export default function Cart() {
   const { cartList, updateQuantity, removeItem } = useCartStore();
+  const { setOrderItem } = useCheckoutStore();
   const navigate = useNavigate();
 
   const totalPrice = useMemo(() => {
@@ -17,12 +19,12 @@ export default function Cart() {
       alert("장바구니가 비어 있습니다.");
       return;
     }
+    setOrderItem(cartList);
+
     navigate("/checkout");
   };
 
   const isCartEmpty = cartList.length === 0;
-
-  console.log(cartList);
 
   return (
     <>
