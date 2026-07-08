@@ -32,7 +32,7 @@ export default function Header() {
               <NavLink
                 to="/"
                 className={({ isActive }) =>
-                  `py-2.5 px-5 text-(--navy) text-sm lg:hover:border-b-2 hover:border-(--brass) ${isActive ? "border-l-2 lg:border-b-2 lg:border-l-0 border-(--brass)" : "border-l-0 border-b-0"}`
+                  `py-2.5 px-5 text-(--navy) text-sm lg:border-b-2 lg:border-transparent hover:border-(--brass) ${isActive ? "border-l-2 lg:border-b-2 lg:border-l-0 border-(--brass)" : "border-l-0 border-b-0"}`
                 }
               >
                 홈
@@ -42,7 +42,7 @@ export default function Header() {
               <NavLink
                 to="/brand"
                 className={({ isActive }) =>
-                  `py-2.5 px-5 text-(--navy) text-sm lg:hover:border-b-2 hover:border-(--brass) ${isActive ? "border-l-2 lg:border-b-2 lg:border-l-0 border-(--brass)" : "border-l-0 border-b-0"}`
+                  `py-2.5 px-5 text-(--navy) text-sm lg:border-b-2 lg:border-transparent hover:border-(--brass) ${isActive ? "border-l-2 lg:border-b-2 lg:border-l-0 border-(--brass)" : "border-l-0 border-b-0"}`
                 }
               >
                 브랜드
@@ -51,7 +51,7 @@ export default function Header() {
             <li className="border-b border-(--line) lg:border-b-0 p-5 lg:p-0">
               <NavLink
                 to="/product"
-                className={`py-2.5 px-5 text-(--navy) text-sm lg:hover:border-b-2 hover:border-(--brass) ${productActive ? "border-l-2 lg:border-b-2 lg:border-l-0 border-(--brass)" : "border-b-0"}`}
+                className={`py-2.5 px-5 text-(--navy) text-sm lg:border-b-2 lg:border-transparent hover:border-(--brass) ${productActive ? "border-l-2 lg:border-b-2 lg:border-l-0 border-(--brass)" : "border-b-0"}`}
               >
                 제품
               </NavLink>
@@ -60,7 +60,7 @@ export default function Header() {
               <NavLink
                 to="/compare"
                 className={({ isActive }) =>
-                  `py-2.5 px-5 text-(--navy) text-sm lg:hover:border-b-2 hover:border-(--brass) ${isActive ? "border-l-2 lg:border-b-2 lg:border-l-0 border-(--brass)" : "border-l-0 border-b-0"}`
+                  `py-2.5 px-5 text-(--navy) text-sm lg:border-b-2 lg:border-transparent hover:border-(--brass) ${isActive ? "border-l-2 lg:border-b-2 lg:border-l-0 border-(--brass)" : "border-l-0 border-b-0"}`
                 }
               >
                 비교
@@ -69,7 +69,7 @@ export default function Header() {
             <li className="border-b border-(--line) lg:border-b-0 p-5 lg:p-0">
               <NavLink
                 to="/event"
-                className={`py-2.5 px-5 text-(--navy) text-sm lg:hover:border-b-2 hover:border-(--brass) ${eventActive ? "border-l-2 lg:border-b-2 lg:border-l-0 border-(--brass)" : "border-b-0"}`}
+                className={`py-2.5 px-5 text-(--navy) text-sm lg:border-b-2 lg:border-transparent hover:border-(--brass) ${eventActive ? "border-l-2 lg:border-b-2 lg:border-l-0 border-(--brass)" : "border-b-0"}`}
               >
                 이벤트
               </NavLink>
@@ -78,7 +78,7 @@ export default function Header() {
               <NavLink
                 to="/faq"
                 className={({ isActive }) =>
-                  `py-2.5 px-5 text-(--navy) text-sm lg:hover:border-b-2 hover:border-(--brass) ${isActive ? "border-l-2 lg:border-b-2 lg:border-l-0 border-(--brass)" : "border-l-0 border-b-0"}`
+                  `py-2.5 px-5 text-(--navy) text-sm lg:border-b-2 lg:border-transparent hover:border-(--brass) ${isActive ? "border-l-2 lg:border-b-2 lg:border-l-0 border-(--brass)" : "border-l-0 border-b-0"}`
                 }
               >
                 FAQ
@@ -88,7 +88,7 @@ export default function Header() {
               <NavLink
                 to="/inquiry"
                 className={({ isActive }) =>
-                  `py-2.5 px-5 text-(--navy) text-sm lg:hover:border-b-2 hover:border-(--brass) ${isActive ? "border-l-2 lg:border-b-2 lg:border-l-0 border-(--brass)" : "border-l-0 border-b-0"}`
+                  `py-2.5 px-5 text-(--navy) text-sm lg:border-b-2 lg:border-transparent hover:border-(--brass) ${isActive ? "border-l-2 lg:border-b-2 lg:border-l-0 border-(--brass)" : "border-l-0 border-b-0"}`
                 }
               >
                 문의하기

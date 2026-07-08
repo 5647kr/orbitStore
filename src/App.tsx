@@ -10,6 +10,7 @@ import EventDetail from "./routes/pages/event/Event.Detail";
 import Faq from "./routes/pages/faq/Faq";
 import Inquiry from "./routes/pages/inquiry/Inquiry";
 import Cart from "./routes/pages/cart/Cart";
+import Checkout from "./routes/pages/checkout/Checkout";
 
 const router = createBrowserRouter([
   {
@@ -26,6 +27,7 @@ const router = createBrowserRouter([
       { path: "/faq", Component: Faq },
       { path: "/inquiry", Component: Inquiry },
       { path: "/cart", Component: Cart },
+      { path: "/checkout", Component: Checkout },
     ],
   },
 ]);
