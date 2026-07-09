@@ -11,6 +11,8 @@ import Faq from "./routes/pages/faq/Faq";
 import Inquiry from "./routes/pages/inquiry/Inquiry";
 import Cart from "./routes/pages/cart/Cart";
 import Checkout from "./routes/pages/checkout/Checkout";
+import Signup from "./routes/pages/auth/Signup";
+import Login from "./routes/pages/auth/Login";
 
 const router = createBrowserRouter([
   {
@@ -19,6 +21,8 @@ const router = createBrowserRouter([
     children: [
       { path: "/", Component: Home },
       { path: "/brand", Component: Brand },
+      { path: "/signup", Component: Signup },
+      { path: "/login", Component: Login },
       { path: "/product", Component: Product },
       { path: "/product/:id", Component: ProductDetail },
       { path: "/compare", Component: Compare },

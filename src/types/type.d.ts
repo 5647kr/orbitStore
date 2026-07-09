@@ -43,3 +43,26 @@ interface CartList {
   apertureRatio: string;
   quantity: number;
 }
+
+interface SignupForm {
+  name: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+  call: string;
+}
+
+interface LoginForm {
+  email: string;
+  password: string;
+}
+
+interface User {
+  id: string;
+  created_at: string;
+  name: string;
+  email: string;
+  call: string;
+  address: string;
+  type: "user" | "admin";
+}
