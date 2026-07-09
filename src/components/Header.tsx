@@ -1,14 +1,31 @@
-import { Menu, ShoppingCart, UserRound, UserRoundCog } from "lucide-react";
+import {
+  LogOut,
+  Menu,
+  ShoppingCart,
+  UserRound,
+  UserRoundCog,
+} from "lucide-react";
 import { useState } from "react";
 import { Link, NavLink, useLocation, useNavigate } from "react-router";
+import { useAuthStore } from "../store/useAuthStore";
 
 export default function Header() {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { pathname } = useLocation();
   const navigate = useNavigate();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { user, isLoggedIn, setLogout } = useAuthStore();
 
   const toggleMenu = () => {
     setIsMenuOpen((isMenuOpen) => !isMenuOpen);
+  };
+
+  const handleUserMenu = () => {
+    if (isLoggedIn) {
+      navigate("/cart");
+    } else {
+      window.alert("로그인이 필요합니다. 로그인페이지로 이동합니다.");
+      navigate("/login");
+    }
   };
 
   const productActive = pathname.includes("product");
@@ -32,7 +49,7 @@ export default function Header() {
               <NavLink
                 to="/"
                 className={({ isActive }) =>
-                  `py-2.5 px-5 text-(--navy) text-sm lg:border-b-2 lg:border-transparent hover:border-(--brass) ${isActive ? "border-l-2 lg:border-b-2 lg:border-l-0 border-(--brass)" : "border-l-0 border-b-0"}`
+                  `py-2.5 px-5 text-(--navy) text-sm lg:border-b-2 border-(--bg) hover:border-(--brass) ${isActive ? "border-l-2 lg:border-b-2 lg:border-l-0 border-(--brass)" : "border-l-0 border-b-0"}`
                 }
               >
                 홈
@@ -42,7 +59,7 @@ export default function Header() {
               <NavLink
                 to="/brand"
                 className={({ isActive }) =>
-                  `py-2.5 px-5 text-(--navy) text-sm lg:border-b-2 lg:border-transparent hover:border-(--brass) ${isActive ? "border-l-2 lg:border-b-2 lg:border-l-0 border-(--brass)" : "border-l-0 border-b-0"}`
+                  `py-2.5 px-5 text-(--navy) text-sm lg:border-b-2 border-(--bg) hover:border-(--brass) ${isActive ? "border-l-2 lg:border-b-2 lg:border-l-0 border-(--brass)" : "border-l-0 border-b-0"}`
                 }
               >
                 브랜드
@@ -51,7 +68,7 @@ export default function Header() {
             <li className="border-b border-(--line) lg:border-b-0 p-5 lg:p-0">
               <NavLink
                 to="/product"
-                className={`py-2.5 px-5 text-(--navy) text-sm lg:border-b-2 lg:border-transparent hover:border-(--brass) ${productActive ? "border-l-2 lg:border-b-2 lg:border-l-0 border-(--brass)" : "border-b-0"}`}
+                className={`py-2.5 px-5 text-(--navy) text-sm lg:border-b-2 border-(--bg) hover:border-(--brass) ${productActive ? "border-l-2 lg:border-b-2 lg:border-l-0 border-(--brass)" : "border-b-0"}`}
               >
                 제품
               </NavLink>
@@ -60,7 +77,7 @@ export default function Header() {
               <NavLink
                 to="/compare"
                 className={({ isActive }) =>
-                  `py-2.5 px-5 text-(--navy) text-sm lg:border-b-2 lg:border-transparent hover:border-(--brass) ${isActive ? "border-l-2 lg:border-b-2 lg:border-l-0 border-(--brass)" : "border-l-0 border-b-0"}`
+                  `py-2.5 px-5 text-(--navy) text-sm lg:border-b-2 border-(--bg) hover:border-(--brass) ${isActive ? "border-l-2 lg:border-b-2 lg:border-l-0 border-(--brass)" : "border-l-0 border-b-0"}`
                 }
               >
                 비교
@@ -69,7 +86,7 @@ export default function Header() {
             <li className="border-b border-(--line) lg:border-b-0 p-5 lg:p-0">
               <NavLink
                 to="/event"
-                className={`py-2.5 px-5 text-(--navy) text-sm lg:border-b-2 lg:border-transparent hover:border-(--brass) ${eventActive ? "border-l-2 lg:border-b-2 lg:border-l-0 border-(--brass)" : "border-b-0"}`}
+                className={`py-2.5 px-5 text-(--navy) text-sm lg:border-b-2 border-(--bg) hover:border-(--brass) ${eventActive ? "border-l-2 lg:border-b-2 lg:border-l-0 border-(--brass)" : "border-b-0"}`}
               >
                 이벤트
               </NavLink>
@@ -78,7 +95,7 @@ export default function Header() {
               <NavLink
                 to="/faq"
                 className={({ isActive }) =>
-                  `py-2.5 px-5 text-(--navy) text-sm lg:border-b-2 lg:border-transparent hover:border-(--brass) ${isActive ? "border-l-2 lg:border-b-2 lg:border-l-0 border-(--brass)" : "border-l-0 border-b-0"}`
+                  `py-2.5 px-5 text-(--navy) text-sm lg:border-b-2 border-(--bg) hover:border-(--brass) ${isActive ? "border-l-2 lg:border-b-2 lg:border-l-0 border-(--brass)" : "border-l-0 border-b-0"}`
                 }
               >
                 FAQ
@@ -88,7 +105,7 @@ export default function Header() {
               <NavLink
                 to="/inquiry"
                 className={({ isActive }) =>
-                  `py-2.5 px-5 text-(--navy) text-sm lg:border-b-2 lg:border-transparent hover:border-(--brass) ${isActive ? "border-l-2 lg:border-b-2 lg:border-l-0 border-(--brass)" : "border-l-0 border-b-0"}`
+                  `py-2.5 px-5 text-(--navy) text-sm lg:border-b-2 border-(--bg) hover:border-(--brass) ${isActive ? "border-l-2 lg:border-b-2 lg:border-l-0 border-(--brass)" : "border-l-0 border-b-0"}`
                 }
               >
                 문의하기
@@ -106,19 +123,32 @@ export default function Header() {
             >
               <UserRound stroke="var(--navy)" strokeWidth="1" size={16} />
             </button>
-            <button
-              type="button"
-              className="flex border rounded-full border-(--line) w-9 h-9 justify-center items-center"
-            >
-              <UserRoundCog stroke="var(--navy)" strokeWidth="1" size={16} />
-            </button>
+            {user && user.type === "admin" && (
+              <button
+                type="button"
+                className="flex border rounded-full border-(--line) w-9 h-9 justify-center items-center"
+              >
+                <UserRoundCog stroke="var(--navy)" strokeWidth="1" size={16} />
+              </button>
+            )}
             <button
               type="button"
               className={`flex border rounded-full  w-9 h-9 justify-center items-center hover:border-(--ink) ${cartActive ? "border-(--ink)" : "border-(--line)"}`}
-              onClick={() => navigate("/cart")}
+              onClick={handleUserMenu}
             >
               <ShoppingCart stroke="var(--navy)" strokeWidth="1" size={16} />
             </button>
+            {/* 로그아웃 버튼 */}
+            {isLoggedIn && (
+              <button
+                type="button"
+                className="flex border rounded-full border-(--line) w-9 h-9 justify-center items-center hover:border-(--ink)"
+                onClick={setLogout}
+              >
+                <LogOut stroke="var(--navy)" strokeWidth="1" size={16} />
+              </button>
+            )}
+
             {/* 모바일용 햄버거 버튼 */}
             <button
               type="button"
