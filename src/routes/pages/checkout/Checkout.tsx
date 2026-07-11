@@ -1,13 +1,139 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import Hero from "../../../components/Hero";
 import { useCheckoutStore } from "../../../store/useCheckoutStore";
+import AddressModal from "../../../components/AddressModal";
+import type { Address } from "react-daum-postcode";
+import { useAuthStore } from "../../../store/useAuthStore";
+import { useNavigate } from "react-router";
+import supabase from "../../../supabase";
+
+interface CheckoutForm {
+  id: string;
+  name: string;
+  call: string;
+  postCode: string;
+  basicAddress: string;
+  detailAddress: string;
+  memo: string;
+}
 
 export default function Checkout() {
+  const { user, isLoggedIn } = useAuthStore();
+  const navigate = useNavigate();
+
+  if (!user || !isLoggedIn) {
+    window.alert("로그인이 필요합니다. 로그인페이지로 이동합니다.");
+    navigate("/login");
+    return;
+  }
+
+  const initForm = {
+    id: user?.id,
+    name: "",
+    call: "",
+    postCode: "",
+    basicAddress: "",
+    detailAddress: "",
+    memo: "",
+  };
+  const [addressModal, setAddressModal] = useState(false);
   const { orderItem } = useCheckoutStore();
+  const [checkoutForm, setCheckoutForm] = useState(initForm);
+  const [checkoutError, setCheckoutError] = useState(initForm);
+  const [isAgree, setIsAgree] = useState({
+    agree1: false,
+    agree2: false,
+  });
+
+  const handleAddressComplete = (data: Address) => {
+    setCheckoutForm((checkoutForm) => ({
+      ...checkoutForm,
+      postCode: data.zonecode,
+      basicAddress: data.address,
+    }));
+
+    setAddressModal(false);
+  };
+
+  const handleForm = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
+  ) => {
+    setCheckoutForm((checkoutForm) => ({
+      ...checkoutForm,
+      [e.target.name]: e.target.value,
+    }));
+  };
+
+  const toggleAgree = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setIsAgree((prev) => ({
+      ...prev,
+      [e.target.name]: e.target.checked,
+    }));
+  };
+
+  const toggleAllAgree = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { checked } = e.target;
+
+    setIsAgree({
+      agree1: checked,
+      agree2: checked,
+    });
+  };
+
+  const isAllAgree = isAgree.agree1 && isAgree.agree2;
 
   const totalPrice = useMemo(() => {
     return orderItem.reduce((acc, item) => acc + item.price * item.quantity, 0);
   }, [orderItem]);
+
+  const handleCheckout = async () => {
+    try {
+      const formError = {} as CheckoutForm;
+
+      if (!isAgree.agree1 || !isAgree.agree2) {
+        window.alert("약관에 동의해주세요.");
+        return;
+      }
+
+      if (!checkoutForm.name.trim()) formError.name = "이름을 입력해주세요.";
+      if (!checkoutForm.call.trim()) formError.call = "연락처를 입력해주세요.";
+      if (!checkoutForm.postCode.trim())
+        formError.postCode = "주소를 확인해주세요.";
+      if (!checkoutForm.basicAddress.trim())
+        formError.basicAddress = "주소를 확인해주세요..";
+      if (!checkoutForm.detailAddress.trim())
+        formError.detailAddress = "상세주소를 입력해주세요.";
+      if (!checkoutForm.memo.trim()) formError.memo = "배송 요청을 남겨주세요.";
+
+      if (Object.keys(formError).length > 0) {
+        setCheckoutError(formError);
+        return;
+      }
+
+      const payment = {
+        buyer: checkoutForm,
+        items: orderItem,
+        totalPrice: totalPrice,
+      };
+
+      const { data, error } = await supabase.functions.invoke("payment-ready", {
+        body: payment,
+      });
+
+      if (error) {
+        console.log(error);
+
+        if ("context" in error && error.context) {
+        }
+
+        return;
+      }
+
+      console.log(data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   return (
     <>
@@ -43,13 +169,10 @@ export default function Checkout() {
                       name="name"
                       placeholder="홍길동"
                       autoComplete="off"
+                      onChange={handleForm}
+                      value={checkoutForm.name}
                       className="w-full border border-(--line) focus:outline-(--brass) py-3 px-3.5"
                     />
-                    {/* {formError.name && (
-                      <strong className="text-(--danger) text-xs">
-                        * 이름을 작성해주세요.
-                      </strong>
-                    )} */}
                   </div>
                   {/* call */}
                   <div className="w-full flex flex-col gap-2">
@@ -65,13 +188,10 @@ export default function Checkout() {
                       name="call"
                       placeholder="010-0000-0000"
                       autoComplete="off"
+                      onChange={handleForm}
+                      value={checkoutForm.call}
                       className="w-full border border-(--line) focus:outline-(--brass) py-3 px-3.5"
                     />
-                    {/* {formError.call && (
-                      <strong className="text-(--danger) text-xs">
-                        * 연락처를 작성해주세요.
-                      </strong>
-                    )} */}
                   </div>
                 </div>
 
@@ -88,11 +208,13 @@ export default function Checkout() {
                       placeholder="12345"
                       readOnly
                       autoComplete="off"
+                      value={checkoutForm.postCode}
                       className="w-full border border-(--line) focus:outline-(--brass) py-3 px-3.5"
                     />
                     <button
                       type="button"
                       className="border border-(--navy) py-2 px-4 text-xs text-nowrap hover:boder-(--navy) hover:bg-(--navy) hover:text-(--bg)"
+                      onClick={() => setAddressModal(true)}
                     >
                       주소검색
                     </button>
@@ -100,23 +222,23 @@ export default function Checkout() {
                 </div>
                 {/* 기본 주소 */}
                 <div className="w-full flex flex-col gap-2">
-                  <label htmlFor="address" className="text-(--ink-soft)">
+                  <label htmlFor="basicAddress" className="text-(--ink-soft)">
                     기본 주소<span className="text-(--brass)">*</span>
                   </label>
                   <input
                     type="text"
-                    id="address"
-                    name="address"
+                    id="basicAddress"
+                    name="basicAddress"
                     placeholder="도로명 주소"
                     autoComplete="off"
                     readOnly
+                    value={checkoutForm.basicAddress}
                     className="w-full border border-(--line) focus:outline-(--brass) py-3 px-3.5"
                   />
                 </div>
-
                 {/* 상세 주소 */}
                 <div className="w-full flex flex-col gap-2">
-                  <label htmlFor="address" className="text-(--ink-soft)">
+                  <label htmlFor="detailAddress" className="text-(--ink-soft)">
                     상세 주소<span className="text-(--brass)">*</span>
                   </label>
                   <input
@@ -125,6 +247,8 @@ export default function Checkout() {
                     name="detailAddress"
                     placeholder="동/호수 등 상세 주소"
                     autoComplete="off"
+                    onChange={handleForm}
+                    value={checkoutForm.detailAddress}
                     className="w-full border border-(--line) focus:outline-(--brass) py-3 px-3.5"
                   />
                 </div>
@@ -136,6 +260,8 @@ export default function Checkout() {
                     id="memo"
                     name="memo"
                     autoComplete="off"
+                    onChange={handleForm}
+                    value={checkoutForm.memo}
                     className="border border-(--line) w-full py-3 px-3.5 text-base focus:outline-(--brass)"
                   >
                     <option value="">배송 메모를 선택해주세요.</option>
@@ -188,8 +314,6 @@ hover:after:w-6 hover:after:h-6 hover:after:border-(--brass)
 
                         {/* 제품 정보란 */}
                         <div className="flex-1 min-w-0">
-                          {" "}
-                          {/* 💡 글자 말줄임(ellipsis)이 작동하려면 min-w-0이 필요합니다 */}
                           <span className="text-xs text-(--muted)">
                             {item.category}
                           </span>
@@ -249,17 +373,31 @@ hover:after:w-6 hover:after:h-6 hover:after:border-(--brass)
 
               <div className="flex flex-col gap-5 mt-4">
                 <label className="flex items-center gap-2.5">
-                  <input type="checkbox" />
+                  <input
+                    type="checkbox"
+                    checked={isAllAgree}
+                    onChange={toggleAllAgree}
+                  />
                   전체 동의
                 </label>
                 <label className="flex items-center gap-2.5">
-                  <input type="checkbox" />
-                  주문 내용 확인 및 결제 진행에 동의합니다.{" "}
+                  <input
+                    type="checkbox"
+                    name="agree1"
+                    onChange={toggleAgree}
+                    checked={isAgree.agree1}
+                  />
+                  주문 내용 확인 및 결제 진행에 동의합니다.
                   <span className="text-(--brass)">*</span>
                 </label>
                 <label className="flex items-center gap-2.5">
-                  <input type="checkbox" />
-                  개인정보 수집 및 이용에 동의합니다.{" "}
+                  <input
+                    type="checkbox"
+                    name="agree2"
+                    onChange={toggleAgree}
+                    checked={isAgree.agree2}
+                  />
+                  개인정보 수집 및 이용에 동의합니다.
                   <span className="text-(--brass)">*</span>
                 </label>
               </div>
@@ -297,7 +435,8 @@ hover:after:w-6 hover:after:h-6 hover:after:border-(--brass)
             </div>
 
             <button
-              type="button"
+              type="submit"
+              onClick={handleCheckout}
               className="py-3 px-6 text-sm text-center w-full mt-5.5 bg-(--brass) text-(--bg)"
             >
               ₩{totalPrice.toLocaleString("ko-KR") || 0} 결제하기
@@ -305,6 +444,13 @@ hover:after:w-6 hover:after:h-6 hover:after:border-(--brass)
           </div>
         </div>
       </section>
+
+      {addressModal && (
+        <AddressModal
+          setAddressModal={setAddressModal}
+          onComplete={handleAddressComplete}
+        />
+      )}
     </>
   );
 }
