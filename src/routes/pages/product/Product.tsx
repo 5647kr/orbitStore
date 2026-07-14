@@ -30,8 +30,6 @@ export default function Product() {
     loadData();
   }, [filter.category, filter.sort]);
 
-  console.log(data);
-
   // 필터링 처리
   const handleFilterChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,

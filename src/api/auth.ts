@@ -2,45 +2,59 @@ import { useAuthStore } from "../store/useAuthStore";
 import supabase from "../supabase";
 
 export async function signupAuth(signupForm: SignupForm) {
-  const { data: signupData, error: signupError } = await supabase.auth.signUp({
+  const { data, error } = await supabase.auth.signUp({
     email: signupForm.email,
     password: signupForm.password,
+    options: {
+      data: {
+        name: signupForm.name,
+        call: signupForm.call,
+        type: "user",
+      },
+    },
   });
 
-  if (signupError) throw new Error("회원가입 실패");
+  if (error) throw error;
 
-  if (signupData.user) {
-    const { error } = await supabase.from("profile").insert({
-      id: signupData.user.id,
-      name: signupForm.name,
-      email: signupForm.email,
-      type: "user",
-      call: signupForm.call,
-      address: "",
-    });
-
-    if (error) throw error;
-  }
+  return data;
 }
 
 export async function loginAuth(loginForm: LoginForm) {
-  const { data: loginData, error: loginError } =
-    await supabase.auth.signInWithPassword({
+  const { data: { user }, error } = await supabase.auth
+    .signInWithPassword({
       email: loginForm.email,
       password: loginForm.password,
     });
 
-  if (loginError) throw new Error("로그인 실패");
+  if (error) throw new Error("로그인 실패");
 
-  if (loginData.user) {
-    const { data, error } = await supabase
-      .from("profile")
-      .select("*")
-      .eq("id", loginData.user.id)
-      .single();
+  if (user) {
+    useAuthStore.getState().setLogin({
+      id: user.id,
+      name: user.user_metadata.name,
+      call: user.user_metadata.call,
+      email: user.user_metadata.email,
+      type: user.user_metadata.type,
+    });
+  }
+}
 
-    if (error) throw error;
-    
-    useAuthStore.getState().setLogin(data);
+export async function logoutAuth() {
+  const { error } = await supabase.auth.signOut();
+
+  if (error) throw error;
+}
+
+export async function getUser() {
+  const { data: { user } } = await supabase.auth.getUser();
+
+  if (user) {
+    useAuthStore.getState().setLogin({
+      id: user?.user_metadata.sub,
+      name: user?.user_metadata.name,
+      call: user?.user_metadata.call,
+      email: user?.user_metadata.email,
+      type: user?.user_metadata.type,
+    });
   }
 }

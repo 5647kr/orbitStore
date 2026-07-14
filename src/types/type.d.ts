@@ -59,10 +59,8 @@ interface LoginForm {
 
 interface User {
   id: string;
-  created_at: string;
   name: string;
   email: string;
   call: string;
-  address: string;
-  type: "user" | "admin";
+  type: string;
 }
