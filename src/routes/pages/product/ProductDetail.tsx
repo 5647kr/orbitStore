@@ -2,10 +2,11 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router";
 import { fetchOneData } from "../../../api/fetchData";
 import { ProductDetailSkeleton } from "../../../components/Skeleton";
-import { Minus, Plus } from "lucide-react";
+import { Copy, Minus, Plus } from "lucide-react";
 import { useCartStore } from "../../../store/useCartStore";
 import { useCheckoutStore } from "../../../store/useCheckoutStore";
 import { useAuthStore } from "../../../store/useAuthStore";
+import { useCompareStore } from "../../../store/useCompareStore";
 
 export default function ProductDetail() {
   const [isLoading, setIsLoading] = useState(false);
@@ -17,6 +18,7 @@ export default function ProductDetail() {
   const { setOrderItem } = useCheckoutStore();
   const navigate = useNavigate();
   const { isLoggedIn } = useAuthStore();
+  const { compareId, addProduct } = useCompareStore();
 
   useEffect(() => {
     if (!id) return;
@@ -103,7 +105,7 @@ export default function ProductDetail() {
 
   return (
     <section className="py-10">
-      <div className="max-w-7xl p-5 mx-auto ">
+      <div className="max-w-7xl p-5 mx-auto">
         {/* 네비게이션 */}
         <div className="mb-5">
           <span className="flex gap-px text-xs lg:text-sm">
@@ -129,11 +131,19 @@ export default function ProductDetail() {
 
           <div className="w-full">
             {/* 카테고리 */}
-            <div>
+            <div className="flex items-center justify-between">
               <span className="text-xs lg:text-sm text-(--brass)">
                 {data.brand}&nbsp; · &nbsp;
                 {data.category}
               </span>
+              <button
+                type="button"
+                className={`flex items-center gap-2 border py-2.5 px-5 hover:border-(--navy) text-xs ${compareId.includes(data.id) ? "border-(--brass) bg-(--brass-soft)" : "border-(--line) bg-(--bg)"}`}
+                onClick={() => addProduct(data)}
+              >
+                <Copy strokeWidth={1} size={16} stroke="var(--navy)" />
+                {compareId.includes(data.id) ? "비교함에 담김" : "비교함 담기"}
+              </button>
             </div>
             {/* 제품명 */}
             <h2 className="fraunces mt-2.5 text-3xl">{data.title}</h2>
