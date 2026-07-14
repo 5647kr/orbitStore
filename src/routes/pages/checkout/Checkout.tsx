@@ -28,7 +28,7 @@ export default function Checkout() {
   }
 
   const initForm = {
-    id: user?.id,
+    id: user.id,
     name: "",
     call: "",
     postCode: "",

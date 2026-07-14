@@ -5,7 +5,7 @@ import {
   UserRound,
   UserRoundCog,
 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, NavLink, useLocation, useNavigate } from "react-router";
 import { useAuthStore } from "../store/useAuthStore";
 
@@ -18,6 +18,10 @@ export default function Header() {
   const toggleMenu = () => {
     setIsMenuOpen((isMenuOpen) => !isMenuOpen);
   };
+
+  useEffect(() => {
+    setIsMenuOpen(false)
+  }, [pathname])
 
   const handleUserMenu = () => {
     if (isLoggedIn) {

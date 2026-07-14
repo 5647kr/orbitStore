@@ -44,13 +44,10 @@ export async function insertData<T extends InsertInquiry>(
   fetchType: string,
   form: T,
 ) {
-  console.log(form);
   const { data, error } = await supabase
     .from(fetchType)
     .insert([form])
     .select();
-
-  console.log(data);
 
   if (error) throw error;
 
