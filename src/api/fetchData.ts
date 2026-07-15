@@ -40,7 +40,7 @@ export async function fetchOneData(fetchType: string, id: string) {
   return data;
 }
 
-export async function insertData<T extends InsertInquiry>(
+export async function insertData<T extends InsertInquiry | InsertPayment>(
   fetchType: string,
   form: T,
 ) {
@@ -49,7 +49,7 @@ export async function insertData<T extends InsertInquiry>(
     .insert([form])
     .select();
 
-  if (error) throw error;
+  if (error) throw { data: null, error };
 
-  return { data: data as T[] };
+  return { data: data as T[], error: null };
 }

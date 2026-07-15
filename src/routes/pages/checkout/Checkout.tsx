@@ -5,7 +5,6 @@ import AddressModal from "../../../components/AddressModal";
 import type { Address } from "react-daum-postcode";
 import { useAuthStore } from "../../../store/useAuthStore";
 import { useNavigate } from "react-router";
-import supabase from "../../../supabase";
 
 interface CheckoutForm {
   id: string;
@@ -20,6 +19,7 @@ interface CheckoutForm {
 export default function Checkout() {
   const { user, isLoggedIn } = useAuthStore();
   const navigate = useNavigate();
+  const { requestCheckout } = useCheckoutStore();
 
   if (!user || !isLoggedIn) {
     window.alert("로그인이 필요합니다. 로그인페이지로 이동합니다.");
@@ -116,20 +116,14 @@ export default function Checkout() {
         totalPrice: totalPrice,
       };
 
-      const { data, error } = await supabase.functions.invoke("payment-ready", {
-        body: payment,
-      });
+      const result = await requestCheckout(payment);
 
-      if (error) {
-        console.log(error);
-
-        if ("context" in error && error.context) {
-        }
-
-        return;
+      if (result.success) {
+        alert("결제가 성공적으로 완료되었습니다.");
+        navigate("/product");
+      } else {
+        alert("결제에 실패했습니다. 다시 시도하세요.");
       }
-
-      console.log(data);
     } catch (error) {
       console.log(error);
     }
@@ -173,6 +167,11 @@ export default function Checkout() {
                       value={checkoutForm.name}
                       className="w-full border border-(--line) focus:outline-(--brass) py-3 px-3.5"
                     />
+                    {checkoutError.name && (
+                      <strong className="text-(--danger) text-xs">
+                        * 이름을 작성해주세요.
+                      </strong>
+                    )}
                   </div>
                   {/* call */}
                   <div className="w-full flex flex-col gap-2">
@@ -192,6 +191,11 @@ export default function Checkout() {
                       value={checkoutForm.call}
                       className="w-full border border-(--line) focus:outline-(--brass) py-3 px-3.5"
                     />
+                    {checkoutError.call && (
+                      <strong className="text-(--danger) text-xs">
+                        * 연락처 작성해주세요.
+                      </strong>
+                    )}
                   </div>
                 </div>
 
@@ -219,6 +223,11 @@ export default function Checkout() {
                       주소검색
                     </button>
                   </div>
+                  {checkoutError.postCode && (
+                    <strong className="text-(--danger) text-xs">
+                      * 주소를 검색해주세요.
+                    </strong>
+                  )}
                 </div>
                 {/* 기본 주소 */}
                 <div className="w-full flex flex-col gap-2">
@@ -235,6 +244,11 @@ export default function Checkout() {
                     value={checkoutForm.basicAddress}
                     className="w-full border border-(--line) focus:outline-(--brass) py-3 px-3.5"
                   />
+                  {checkoutError.basicAddress && (
+                    <strong className="text-(--danger) text-xs">
+                      * 주소를 검색해주세요.
+                    </strong>
+                  )}
                 </div>
                 {/* 상세 주소 */}
                 <div className="w-full flex flex-col gap-2">
@@ -251,6 +265,11 @@ export default function Checkout() {
                     value={checkoutForm.detailAddress}
                     className="w-full border border-(--line) focus:outline-(--brass) py-3 px-3.5"
                   />
+                  {checkoutError.detailAddress && (
+                    <strong className="text-(--danger) text-xs">
+                      * 상세주소를 작성해주세요.
+                    </strong>
+                  )}
                 </div>
 
                 {/* 배송 메모 */}
@@ -273,6 +292,11 @@ export default function Checkout() {
                       배송 전 연락 부탁드려요
                     </option>
                   </select>
+                  {checkoutError.memo && (
+                    <strong className="text-(--danger) text-xs">
+                      * 배송요청을 선택해주세요.
+                    </strong>
+                  )}
                 </div>
               </form>
             </div>
