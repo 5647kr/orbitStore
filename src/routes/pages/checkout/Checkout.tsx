@@ -5,6 +5,7 @@ import AddressModal from "../../../components/AddressModal";
 import type { Address } from "react-daum-postcode";
 import { useAuthStore } from "../../../store/useAuthStore";
 import { useNavigate } from "react-router";
+import toast from "react-hot-toast";
 
 interface CheckoutForm {
   id: string;
@@ -17,18 +18,12 @@ interface CheckoutForm {
 }
 
 export default function Checkout() {
-  const { user, isLoggedIn } = useAuthStore();
+  const { user } = useAuthStore();
   const navigate = useNavigate();
   const { requestCheckout } = useCheckoutStore();
 
-  if (!user || !isLoggedIn) {
-    window.alert("로그인이 필요합니다. 로그인페이지로 이동합니다.");
-    navigate("/login");
-    return;
-  }
-
   const initForm = {
-    id: user.id,
+    id: user?.id || `GUEST_${crypto.randomUUID()}`,
     name: "",
     call: "",
     postCode: "",
@@ -36,6 +31,7 @@ export default function Checkout() {
     detailAddress: "",
     memo: "",
   };
+
   const [addressModal, setAddressModal] = useState(false);
   const { orderItem } = useCheckoutStore();
   const [checkoutForm, setCheckoutForm] = useState(initForm);
@@ -119,10 +115,19 @@ export default function Checkout() {
       const result = await requestCheckout(payment);
 
       if (result.success) {
-        alert("결제가 성공적으로 완료되었습니다.");
-        navigate("/product");
+        toast.success(
+          "결제가 성공적으로 완료되었습니다. 주문내역으로 이동합니다.",
+          { id: "pay-success", duration: 3000 },
+        );
+
+        setTimeout(() => {
+          navigate("/mypage/order");
+        }, 3000);
       } else {
-        alert("결제에 실패했습니다. 다시 시도하세요.");
+        toast.error("결제에 실패했습니다. 다시 시도해주세요.", {
+          id: "pay-failed",
+          duration: 3000,
+        });
       }
     } catch (error) {
       console.log(error);

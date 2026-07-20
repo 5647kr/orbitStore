@@ -29,7 +29,7 @@ export default function Compare() {
             {/* 제품 비교란 */}
             <div className="border border-(--line)">
               <ul className="flex">
-                <li className="w-full max-w-55 border-r border-(--line)">
+                <li className="w-55 max-w-[100%/5]">
                   {/* 이미지 */}
                   <div className="p-5 w-full aspect-square">
                     <h2>이미지</h2>
@@ -52,7 +52,9 @@ export default function Compare() {
                   </div>
 
                   <div className="p-5 border-t border-(--line)">
-                    <h2 className="text-sm text-(--ink) break-keep">초점거리</h2>
+                    <h2 className="text-sm text-(--ink) break-keep">
+                      초점거리
+                    </h2>
                   </div>
 
                   <div className="p-5 border-t border-(--line)">
@@ -67,7 +69,7 @@ export default function Compare() {
                 {compareProduct.map((product) => (
                   <li
                     key={product.id}
-                    className="w-full max-w-55 border-r border-(--line) relative"
+                    className="w-55 max-w-[100%/5] border-l border-(--line) relative"
                   >
                     {/* 이미지 */}
                     <div className="p-5">
@@ -130,7 +132,7 @@ export default function Compare() {
 
                     <button
                       type="button"
-                      onClick={() => removeProduct(product.id)}
+                      onClick={() => removeProduct(product)}
                       className="border border-(--line) hover:border-(--navy) rounded-full p-2 absolute top-4 right-4 group transition-colors"
                     >
                       <X
@@ -146,12 +148,14 @@ export default function Compare() {
 
             {/* 하단 버튼란 */}
             <div className="flex gap-2.5 mt-10">
-              <Link
-                to="/product"
-                className="py-3 px-6 border border-(--navy) text-(--navy) bg-(--bg) hover:bg-(--navy) hover:text-(--bg)"
-              >
-                제품 더 담으러 가기
-              </Link>
+              {compareProduct.length !== 4 && (
+                <Link
+                  to="/product"
+                  className="py-3 px-6 border border-(--navy) text-(--navy) bg-(--bg) hover:bg-(--navy) hover:text-(--bg)"
+                >
+                  제품 더 담으러 가기
+                </Link>
+              )}
               <button
                 type="button"
                 className="py-3 px-6 border border-(--danger) text-(--danger) bg-(--bg) hover:text-(--bg) hover:bg-(--danger)"
