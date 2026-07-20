@@ -5,8 +5,8 @@ import { ProductDetailSkeleton } from "../../../components/Skeleton";
 import { Copy, Minus, Plus } from "lucide-react";
 import { useCartStore } from "../../../store/useCartStore";
 import { useCheckoutStore } from "../../../store/useCheckoutStore";
-import { useAuthStore } from "../../../store/useAuthStore";
 import { useCompareStore } from "../../../store/useCompareStore";
+import toast from "react-hot-toast";
 
 export default function ProductDetail() {
   const [isLoading, setIsLoading] = useState(false);
@@ -17,7 +17,6 @@ export default function ProductDetail() {
   const { addItem } = useCartStore();
   const { setOrderItem } = useCheckoutStore();
   const navigate = useNavigate();
-  const { isLoggedIn } = useAuthStore();
   const { compareId, addProduct } = useCompareStore();
 
   useEffect(() => {
@@ -52,7 +51,7 @@ export default function ProductDetail() {
   if (isLoading || !data) return <ProductDetailSkeleton />;
 
   if (error) {
-    window.alert("제품 정보를 불러올 수 없습니다.");
+    toast.error("제품 정보를 불러올 수 없습니다.", { id: "product-error" });
   }
 
   const handleAddCart = () => {
@@ -67,17 +66,10 @@ export default function ProductDetail() {
       quantity: count,
     });
 
-    if (isLoggedIn) {
-      if (
-        window.confirm("장바구니에 담겼습니다. 장바구니로 이동하시겠습니까?")
-      ) {
-        navigate("/cart");
-      } else {
-        return;
-      }
+    if (window.confirm("장바구니에 담겼습니다. 장바구니로 이동하시겠습니까?")) {
+      navigate("/cart");
     } else {
-      window.alert("로그인이 필요합니다. 로그인페이지로 이동합니다.");
-      navigate("/login?redirect=/cart");
+      return;
     }
   };
 
@@ -95,12 +87,7 @@ export default function ProductDetail() {
       },
     ]);
 
-    if (isLoggedIn) {
-      navigate("/checkout");
-    } else {
-      window.alert("로그인이 필요합니다. 로그인페이지로 이동합니다.");
-      navigate("/login?redirect=/checkout");
-    }
+    navigate("/checkout");
   };
 
   return (

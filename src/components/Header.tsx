@@ -23,23 +23,6 @@ export default function Header() {
     setIsMenuOpen(false);
   }, [pathname]);
 
-  const handleUserMenu = () => {
-    if (isLoggedIn) {
-      navigate("/cart");
-    } else {
-      window.alert("로그인이 필요합니다. 로그인페이지로 이동합니다.");
-      navigate("/login");
-    }
-  };
-
-  const handleMyPage = () => {
-    if (isLoggedIn) {
-      navigate("/mypage");
-    } else {
-      navigate("/login");
-    }
-  };
-
   const productActive = pathname.includes("product");
   const eventActive = pathname.includes("event");
   const cartActive = pathname === "/cart";

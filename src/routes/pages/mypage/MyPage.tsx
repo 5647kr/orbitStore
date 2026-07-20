@@ -25,60 +25,60 @@ export default function MyPage() {
     <>
       <Hero title="마이페이지" subTitle="" />
 
-      <section className="max-w-7xl p-5 mx-auto flex flex-col lg:flex-row gap-16">
-        <div className="flex-1 border border-(--line)">
+      <section className="max-w-7xl p-5 mx-auto flex flex-col lg:flex-row gap-16 relative">
+        <div className="flex-1 border border-(--line) sticky ">
           <nav>
             <div>
               <h2 className="p-5 text-xs text-(--muted) fraunces font-normal">
                 MY ACTIVITY
               </h2>
               <ul>
-                <li>
+                <li className="w-full flex">
                   <NavLink
                     to="/mypage"
                     end
                     className={({ isActive }) =>
-                      `px-5 py-5 text-sm border-l-2 ${isActive ? "text-(--navy) font-bold bg-(--surface) border-(--brass)" : "text-(--ink-soft) font-normal bg-(--bg) border-(--bg)"}`
+                      `px-5 py-5 text-sm border-l-2 w-full ${isActive ? "text-(--navy) font-bold bg-(--surface) border-(--brass)" : "text-(--ink-soft) font-normal bg-(--bg) border-(--bg)"}`
                     }
                   >
                     대시보드
                   </NavLink>
                 </li>
-                <li>
+                <li className="w-full flex">
                   <NavLink
                     to="/mypage/order"
                     className={({ isActive }) =>
-                      `px-5 py-5 text-sm border-l-2 ${isActive ? "text-(--navy) font-bold bg-(--surface) border-(--brass)" : "text-(--ink-soft) font-normal bg-(--bg) border-(--bg)"}`
+                      `px-5 py-5 text-sm border-l-2 w-full ${isActive ? "text-(--navy) font-bold bg-(--surface) border-(--brass)" : "text-(--ink-soft) font-normal bg-(--bg) border-(--bg)"}`
                     }
                   >
                     주문내역
                   </NavLink>
                 </li>
-                <li>
+                <li className="w-full flex">
                   <NavLink
                     to="/mypage/cart"
                     className={({ isActive }) =>
-                      `px-5 py-5 text-sm border-l-2 ${isActive ? "text-(--navy) font-bold bg-(--surface) border-(--brass)" : "text-(--ink-soft) font-normal bg-(--bg) border-(--bg)"}`
+                      `px-5 py-5 text-sm border-l-2 w-full ${isActive ? "text-(--navy) font-bold bg-(--surface) border-(--brass)" : "text-(--ink-soft) font-normal bg-(--bg) border-(--bg)"}`
                     }
                   >
                     장바구니
                   </NavLink>
                 </li>
-                <li>
+                <li className="w-full flex">
                   <NavLink
                     to="/mypage/compare"
                     className={({ isActive }) =>
-                      `px-5 py-5 text-sm border-l-2 ${isActive ? "text-(--navy) font-bold bg-(--surface) border-(--brass)" : "text-(--ink-soft) font-normal bg-(--bg) border-(--bg)"}`
+                      `px-5 py-5 text-sm border-l-2 w-full ${isActive ? "text-(--navy) font-bold bg-(--surface) border-(--brass)" : "text-(--ink-soft) font-normal bg-(--bg) border-(--bg)"}`
                     }
                   >
                     비교함
                   </NavLink>
                 </li>
-                <li>
+                <li className="w-full flex">
                   <NavLink
                     to="/mypage/inquiry"
                     className={({ isActive }) =>
-                      `px-5 py-5 text-sm border-l-2 ${isActive ? "text-(--navy) font-bold bg-(--surface) border-(--brass)" : "text-(--ink-soft) font-normal bg-(--bg) border-(--bg)"}`
+                      `px-5 py-5 text-sm border-l-2 w-full ${isActive ? "text-(--navy) font-bold bg-(--surface) border-(--brass)" : "text-(--ink-soft) font-normal bg-(--bg) border-(--bg)"}`
                     }
                   >
                     1:1 문의내역
