@@ -13,6 +13,12 @@ import Cart from "./routes/pages/cart/Cart";
 import Checkout from "./routes/pages/checkout/Checkout";
 import Signup from "./routes/pages/auth/Signup";
 import Login from "./routes/pages/auth/Login";
+import MyPage from "./routes/pages/mypage/MyPage";
+import Order from "./routes/pages/mypage/page/MyPageOrder";
+import MyPageOrder from "./routes/pages/mypage/page/MyPageOrder";
+import MyPageCart from "./routes/pages/mypage/page/MyPageCart";
+import MyPageCompare from "./routes/pages/mypage/page/MyPageCompare";
+import MyPageInqury from "./routes/pages/mypage/page/MyPageInquiry";
 
 const router = createBrowserRouter([
   {
@@ -32,6 +38,16 @@ const router = createBrowserRouter([
       { path: "/inquiry", Component: Inquiry },
       { path: "/cart", Component: Cart },
       { path: "/checkout", Component: Checkout },
+      {
+        path: "/mypage",
+        Component: MyPage,
+        children: [
+          { path: "/mypage/order", Component: MyPageOrder },
+          { path: "/mypage/cart", Component: MyPageCart },
+          { path: "/mypage/compare", Component: MyPageCompare },
+          { path: "/mypage/inquiry", Component: MyPageInqury },
+        ],
+      },
     ],
   },
 ]);

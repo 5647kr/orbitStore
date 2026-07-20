@@ -20,8 +20,8 @@ export default function Header() {
   };
 
   useEffect(() => {
-    setIsMenuOpen(false)
-  }, [pathname])
+    setIsMenuOpen(false);
+  }, [pathname]);
 
   const handleUserMenu = () => {
     if (isLoggedIn) {
@@ -32,9 +32,18 @@ export default function Header() {
     }
   };
 
+  const handleMyPage = () => {
+    if (isLoggedIn) {
+      navigate("/mypage");
+    } else {
+      navigate("/login");
+    }
+  };
+
   const productActive = pathname.includes("product");
   const eventActive = pathname.includes("event");
-  const cartActive = pathname.includes("cart");
+  const cartActive = pathname === "/cart";
+  const myPageActive = pathname.includes("mypage");
 
   return (
     <header className="relative border-b border-(--line) bg-(--bg) z-30 h-19.5">
@@ -121,12 +130,12 @@ export default function Header() {
         <div>
           {/* pc용 버튼 */}
           <div className="flex gap-3.5">
-            <button
-              type="button"
-              className="flex border rounded-full border-(--line) w-9 h-9 justify-center items-center"
+            <Link
+              to="/mypage"
+              className={`flex border rounded-full w-9 h-9 justify-center items-center ${myPageActive ? "border-(--ink)" : "border-(--line)"}`}
             >
               <UserRound stroke="var(--navy)" strokeWidth="1" size={16} />
-            </button>
+            </Link>
             {user && user.type === "admin" && (
               <button
                 type="button"
@@ -135,13 +144,12 @@ export default function Header() {
                 <UserRoundCog stroke="var(--navy)" strokeWidth="1" size={16} />
               </button>
             )}
-            <button
-              type="button"
-              className={`flex border rounded-full  w-9 h-9 justify-center items-center hover:border-(--ink) ${cartActive ? "border-(--ink)" : "border-(--line)"}`}
-              onClick={handleUserMenu}
+            <Link
+              to="/cart"
+              className={`border rounded-full w-9 aspect-square flex justify-center items-center hover:border-(--ink) ${cartActive ? "border-(--ink)" : "border-(--line)"}`}
             >
               <ShoppingCart stroke="var(--navy)" strokeWidth="1" size={16} />
-            </button>
+            </Link>
             {/* 로그아웃 버튼 */}
             {isLoggedIn && (
               <button
