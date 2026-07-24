@@ -24,7 +24,7 @@ export const useCheckoutStore = create<CheckoutStore>((set) => ({
     set({ isProgressing: true });
 
     try {
-      const orderId = `ord-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+      const orderId = `ORD-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
       const orderName = payment.items.length > 1
         ? `${payment.items[0].title} 외 ${payment.items.length - 1}건`
         : payment.items[0].title;

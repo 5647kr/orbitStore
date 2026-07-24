@@ -1,4 +1,6 @@
 import {
+  ClipboardCheck,
+  LogIn,
   LogOut,
   Menu,
   ShoppingCart,
@@ -6,12 +8,11 @@ import {
   UserRoundCog,
 } from "lucide-react";
 import { useEffect, useState } from "react";
-import { Link, NavLink, useLocation, useNavigate } from "react-router";
+import { Link, NavLink, useLocation } from "react-router";
 import { useAuthStore } from "../store/useAuthStore";
 
 export default function Header() {
   const { pathname } = useLocation();
-  const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { user, isLoggedIn, setLogout } = useAuthStore();
 
@@ -27,6 +28,7 @@ export default function Header() {
   const eventActive = pathname.includes("event");
   const cartActive = pathname === "/cart";
   const myPageActive = pathname.includes("mypage");
+  const guestActive = pathname.includes("guest");
 
   return (
     <header className="relative border-b border-(--line) bg-(--bg) z-30 h-19.5">
@@ -113,36 +115,61 @@ export default function Header() {
         <div>
           {/* pc용 버튼 */}
           <div className="flex gap-3.5">
-            <Link
-              to="/mypage"
-              className={`flex border rounded-full w-9 h-9 justify-center items-center ${myPageActive ? "border-(--ink)" : "border-(--line)"}`}
-            >
-              <UserRound stroke="var(--navy)" strokeWidth="1" size={16} />
-            </Link>
-            {user && user.type === "admin" && (
-              <button
-                type="button"
-                className="flex border rounded-full border-(--line) w-9 h-9 justify-center items-center"
-              >
-                <UserRoundCog stroke="var(--navy)" strokeWidth="1" size={16} />
-              </button>
+            {isLoggedIn ? (
+              <>
+                {user && user.type === "admin" && (
+                  <button
+                    type="button"
+                    className="flex border rounded-full border-(--line) w-9 h-9 justify-center items-center hover:border-(--ink)"
+                  >
+                    <UserRoundCog
+                      stroke="var(--navy)"
+                      strokeWidth="1"
+                      size={16}
+                    />
+                  </button>
+                )}
+                <Link
+                  to="/mypage"
+                  className={`flex border rounded-full w-9 h-9 justify-center items-center hover:border-(--ink) ${myPageActive ? "border-(--ink)" : "border-(--line)"}`}
+                >
+                  <UserRound stroke="var(--navy)" strokeWidth="1" size={16} />
+                </Link>
+                <button
+                  type="button"
+                  className="flex border rounded-full border-(--line) w-9 h-9 justify-center items-center hover:border-(--ink)"
+                  onClick={setLogout}
+                >
+                  <LogOut stroke="var(--navy)" strokeWidth="1" size={16} />
+                </button>
+              </>
+            ) : (
+              <>
+                <Link
+                  to="/login"
+                  className="flex border rounded-full border-(--line) w-9 h-9 justify-center items-center hover:border-(--ink)"
+                >
+                  <LogIn stroke="var(--navy)" strokeWidth="1" size={16} />
+                </Link>
+                <Link
+                  to="/guest"
+                  className={`flex border rounded-full w-9 h-9 justify-center items-center hover:border-(--ink) ${guestActive ? "border-(--ink)" : "border-(--line)"}`}
+                >
+                  <ClipboardCheck
+                    stroke="var(--navy)"
+                    strokeWidth="1"
+                    size={16}
+                  />
+                </Link>
+              </>
             )}
+            {/* 장바구니 */}
             <Link
               to="/cart"
               className={`border rounded-full w-9 aspect-square flex justify-center items-center hover:border-(--ink) ${cartActive ? "border-(--ink)" : "border-(--line)"}`}
             >
               <ShoppingCart stroke="var(--navy)" strokeWidth="1" size={16} />
             </Link>
-            {/* 로그아웃 버튼 */}
-            {isLoggedIn && (
-              <button
-                type="button"
-                className="flex border rounded-full border-(--line) w-9 h-9 justify-center items-center hover:border-(--ink)"
-                onClick={setLogout}
-              >
-                <LogOut stroke="var(--navy)" strokeWidth="1" size={16} />
-              </button>
-            )}
 
             {/* 모바일용 햄버거 버튼 */}
             <button

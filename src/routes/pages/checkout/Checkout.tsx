@@ -18,7 +18,7 @@ interface CheckoutForm {
 }
 
 export default function Checkout() {
-  const { user } = useAuthStore();
+  const { user, isLoggedIn } = useAuthStore();
   const navigate = useNavigate();
   const { requestCheckout } = useCheckoutStore();
 
@@ -120,9 +120,15 @@ export default function Checkout() {
           { id: "pay-success", duration: 3000 },
         );
 
-        setTimeout(() => {
-          navigate("/mypage/order");
-        }, 3000);
+        if (isLoggedIn) {
+          setTimeout(() => {
+            navigate("/mypage/order");
+          }, 3000);
+        } else {
+          setTimeout(() => {
+            navigate("/guest");
+          }, 3000);
+        }
       } else {
         toast.error("결제에 실패했습니다. 다시 시도해주세요.", {
           id: "pay-failed",

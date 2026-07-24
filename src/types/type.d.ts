@@ -102,3 +102,14 @@ interface InsertPayment {
   deliver: string;
   status: string;
 }
+
+interface Order extends InsertPayment {
+  created_at: string;
+}
+
+interface Inquiry extends InsertInquiry {
+  id: string;
+  created_at: string;
+  answer: string;
+  inquiryId: string;
+}

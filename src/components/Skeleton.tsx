@@ -95,3 +95,25 @@ export function ProductDetailSkeleton() {
 export function EventSkeleton() {
   return <div>EventSkeleton</div>;
 }
+
+export function OrderSkeleton() {
+  return (
+    <div className="border border-(--line)">
+      <div className="h-19.75 border-b border-(--line) bg-(--surface)" />
+      <div className="p-5 flex items-center">
+        {/* 이미지 */}
+        <div className="w-25 h-25 bg-(--surface)" />
+        {/* 기본정보 */}
+        <div className="flex-1 ml-5">
+          {/* 제품명 */}
+          <div className="w-60 h-6 bg-(--surface)" />
+          <div className="w-45 h-5 bg-(--surface) my-2.5" />
+          <div className="w-25 h-4.5 bg-(--surface)" />
+        </div>
+        {/* 버튼 */}
+        <div className="border border-(--navy) w-32.5 h-11.5 text-base flex justify-center items-center">주문 상세 보기</div>
+        <div />
+      </div>
+    </div>
+  );
+}

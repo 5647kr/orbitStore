@@ -58,3 +58,9 @@ export async function getUser() {
     });
   }
 }
+
+export async function updateAuth(
+  { name, call, password }: { name?: string; call?: string; password?: string },
+) {
+  
+}

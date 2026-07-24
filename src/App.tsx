@@ -14,11 +14,14 @@ import Checkout from "./routes/pages/checkout/Checkout";
 import Signup from "./routes/pages/auth/Signup";
 import Login from "./routes/pages/auth/Login";
 import MyPage from "./routes/pages/mypage/MyPage";
-import Order from "./routes/pages/mypage/page/MyPageOrder";
 import MyPageOrder from "./routes/pages/mypage/page/MyPageOrder";
 import MyPageCart from "./routes/pages/mypage/page/MyPageCart";
 import MyPageCompare from "./routes/pages/mypage/page/MyPageCompare";
 import MyPageInqury from "./routes/pages/mypage/page/MyPageInquiry";
+import Guest from "./routes/pages/guest/Guest";
+import GuestOrder from "./routes/pages/guest/GuestOrder";
+import MyPageAccount from "./routes/pages/mypage/page/MyPageAccount";
+import GuestInquiry from "./routes/pages/guest/GuestInquiry";
 
 const router = createBrowserRouter([
   {
@@ -38,10 +41,14 @@ const router = createBrowserRouter([
       { path: "/inquiry", Component: Inquiry },
       { path: "/cart", Component: Cart },
       { path: "/checkout", Component: Checkout },
+      { path: "/guest", Component: Guest },
+      { path: "/guest/order", Component: GuestOrder },
+      { path: "/guest/inquiry", Component: GuestInquiry },
       {
         path: "/mypage",
         Component: MyPage,
         children: [
+          { path: "/mypage", Component: MyPageAccount },
           { path: "/mypage/order", Component: MyPageOrder },
           { path: "/mypage/cart", Component: MyPageCart },
           { path: "/mypage/compare", Component: MyPageCompare },

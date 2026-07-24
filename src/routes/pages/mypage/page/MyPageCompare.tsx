@@ -5,9 +5,8 @@ import { Link } from "react-router";
 export default function MyPageCompare() {
   const { compareProduct } = useCompareStore();
 
-  console.log(compareProduct);
   return (
-    <div>
+    <>
       {compareProduct.length > 0 ? (
         <div className="border border-(--line) p-5">
           <div className="flex justify-between items-center">
@@ -32,14 +31,24 @@ export default function MyPageCompare() {
                   key={item.id}
                   className="border border-(--line) p-5 max-w-50"
                 >
-                  <img
-                    src={item.img}
-                    alt={item.title}
-                    className="bg-(--surface)"
-                  />
+                  <div
+                    className="w-full aspect-square bg-(--surface) flex justify-center items-center relative before:absolute before:w-4.5 before:h-4.5 before:top-2.5 before:left-2.5 before:border-t-2 before:border-l-2 before:border-(--navy) before:transition-all before:duration-250
+
+after:absolute after:w-4.5 after:h-4.5 after:bottom-2.5 after:right-2.5 after:border-b-2 after:border-r-2 after:border-(--navy) after:transition-all after:duration-250
+
+hover:before:w-6 hover:before:h-6 hover:before:border-(--brass)
+hover:after:w-6 hover:after:h-6 hover:after:border-(--brass)
+"
+                  >
+                    <img
+                      src={item.img}
+                      alt={item.title}
+                      className="w-[80%] aspect-square align-top"
+                    />
+                  </div>
                   <h4 className="py-2.5 font-bold">{item.title}</h4>
                   <p className="fraunces text-sm">
-                    {item.price.toLocaleString("ko-KR")}
+                    ₩{item.price.toLocaleString("ko-KR")}
                   </p>
                 </li>
               ))}
@@ -86,6 +95,6 @@ export default function MyPageCompare() {
           </Link>
         </div>
       )}
-    </div>
+    </>
   );
 }
