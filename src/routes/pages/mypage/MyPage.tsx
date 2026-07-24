@@ -1,10 +1,15 @@
-import { NavLink, Outlet, useLocation } from "react-router";
+import { NavLink, Outlet, useLocation, useNavigate } from "react-router";
 import Hero from "../../../components/Hero";
+import { useAuthStore } from "../../../store/useAuthStore";
+import { useEffect } from "react";
+import toast from "react-hot-toast";
 
 export default function MyPage() {
   const { pathname } = useLocation();
+  const { isLoggedIn } = useAuthStore();
+  const navigate = useNavigate();
 
-  let title = "대시보드";
+  let title = "회원 정보";
   switch (pathname) {
     case "/mypage/order":
       title = "주문내역";
@@ -19,11 +24,28 @@ export default function MyPage() {
       title = "1:1 문의내역";
       break;
     default:
-      title = "대시보드";
+      title = "회원 정보";
   }
+
+  useEffect(() => {
+    if (isLoggedIn) return;
+
+    if (!isLoggedIn) {
+      toast.error("로그인이 필요합니다. 홈페이지로 이동합니다.", {
+        id: "auth-logout",
+        duration: 3000,
+      });
+
+      const timer = setTimeout(() => {
+        navigate("/", { replace: true });
+      }, 3000);
+
+      return () => clearTimeout(timer);
+    }
+  }, []);
   return (
     <>
-      <Hero title="마이페이지" subTitle="" />
+      <Hero title="마이페이지" subTitle="마이페이지에 오신것을 환영합니다." />
 
       <section className="max-w-7xl p-5 mx-auto flex flex-col lg:flex-row gap-16 relative">
         <div className="flex-1 border border-(--line) sticky ">
@@ -33,17 +55,6 @@ export default function MyPage() {
                 MY ACTIVITY
               </h2>
               <ul>
-                <li className="w-full flex">
-                  <NavLink
-                    to="/mypage"
-                    end
-                    className={({ isActive }) =>
-                      `px-5 py-5 text-sm border-l-2 w-full ${isActive ? "text-(--navy) font-bold bg-(--surface) border-(--brass)" : "text-(--ink-soft) font-normal bg-(--bg) border-(--bg)"}`
-                    }
-                  >
-                    대시보드
-                  </NavLink>
-                </li>
                 <li className="w-full flex">
                   <NavLink
                     to="/mypage/order"

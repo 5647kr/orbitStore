@@ -188,7 +188,7 @@ export default function Inquiry() {
                 type="text"
                 id="order"
                 name="order"
-                placeholder="example@orbitstore.com"
+                placeholder="예: ORD-1784530205960-663"
                 onChange={handleForm}
                 autoComplete="off"
                 value={formData.order}

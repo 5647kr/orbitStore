@@ -4,9 +4,8 @@ import { Link } from "react-router";
 
 export default function MyPageCart() {
   const { cartList, removeItem } = useCartStore();
-  console.log(cartList);
   return (
-    <div>
+    <>
       {cartList.length > 0 ? (
         <div>
           <ul>
@@ -15,7 +14,6 @@ export default function MyPageCart() {
                 key={item.id}
                 className="py-5 border-b border-(--line) flex flex-col gap-4 lg:flex-row lg:items-center"
               >
-                {/* 1. 제품 정보 구역 (3등분 중 하나) */}
                 <div className="flex gap-4 lg:flex-2 lg:w-0">
                   {/* 제품 이미지 */}
                   <div
@@ -36,8 +34,6 @@ hover:after:w-6 hover:after:h-6 hover:after:border-(--brass)
 
                   {/* 제품 정보란 */}
                   <div className="flex-1 min-w-0">
-                    {" "}
-                    {/* 💡 글자 말줄임(ellipsis)이 작동하려면 min-w-0이 필요합니다 */}
                     <span className="text-xs text-(--muted)">
                       {item.category}
                     </span>
@@ -62,7 +58,6 @@ hover:after:w-6 hover:after:h-6 hover:after:border-(--brass)
                   </div>
                 </div>
 
-                {/* 3. 가격 구역 (3등분 중 하나) */}
                 <div className="border-t border-dashed border-(--line) lg:border-0 py-2 flex items-center justify-end gap-1 flex-1 lg:w-0">
                   <span className="text-(--muted) text-xs lg:hidden">
                     결제금액
@@ -91,6 +86,6 @@ hover:after:w-6 hover:after:h-6 hover:after:border-(--brass)
           </Link>
         </div>
       )}
-    </div>
+    </>
   );
 }
