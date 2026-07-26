@@ -1,7 +1,9 @@
 import Hero from "../../../components/Hero";
-import { insertData } from "../../../api/fetchData";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { useState } from "react";
+import toast from "react-hot-toast";
+import useInquiryMutation from "../../../hook/inquiry/useInquiryMutation";
+import { useInquiryStore } from "../../../store/useInquiryStore";
 
 export default function Inquiry() {
   const initForm = {
@@ -9,27 +11,24 @@ export default function Inquiry() {
     name: "",
     call: "",
     email: "",
-    order: "",
+    orderId: "",
     title: "",
     desc: "",
   };
-  const [formData, setFormData] = useState(initForm);
-  const [formError, setFormError] = useState(initForm);
+  const [form, setForm] = useState(initForm);
   const [isAgree, setIsAgree] = useState(false);
+  const navigate = useNavigate();
+  const { mutate: createInquiry, isPending: isCreating } = useInquiryMutation();
+  const { setInquiry } = useInquiryStore();
 
   const handleForm = (
     e: React.ChangeEvent<
       HTMLSelectElement | HTMLInputElement | HTMLTextAreaElement
     >,
   ) => {
-    setFormData((formData) => ({
-      ...formData,
+    setForm((form) => ({
+      ...form,
       [e.target.name]: e.target.value,
-    }));
-
-    setFormError((formError) => ({
-      ...formError,
-      [e.target.name]: "",
     }));
   };
 
@@ -40,38 +39,60 @@ export default function Inquiry() {
   const submitForm = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    try {
-      const formError = {} as InsertInquiry;
-
-      if (!isAgree) {
-        window.alert("개인정보 수집 및 이용에 동의해주세요.");
-        return;
-      }
-
-      if (!formData.category.trim())
-        formError.category = "문의 유형을 선택해주세요.";
-
-      if (!formData.name.trim()) formError.name = "이름을 입력해주세요.";
-      if (!formData.call.trim()) formError.call = "연락처를 입력해주세요.";
-      if (!formData.email.trim()) formError.email = "이메일을 입력해주세요.";
-      if (!formData.title.trim()) formError.title = "문의 제목을 입력해주세요.";
-      if (!formData.desc.trim()) formError.desc = "문의 내용을 입력해주세요.";
-
-      if (Object.keys(formError).length > 0) {
-        setFormError(formError);
-        return;
-      }
-
-      await insertData("inquiry", formData);
-
-      window.alert("문의가 정상적으로 접수되었습니다.");
-      setFormData(initForm);
-      setFormError(initForm);
-      setIsAgree(false);
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    } catch (error) {
-      console.log(error);
+    if (!form.category.trim()) {
+      toast.error("문의 유형을 선택해주세요.");
+      return;
     }
+
+    if (!form.name.trim()) {
+      toast.error("이름을 입력해주세요.");
+      return;
+    }
+
+    if (!form.call.trim()) {
+      toast.error("연락처를 입력해주세요.");
+      return;
+    }
+
+    if (!form.email.trim()) {
+      toast.error("이메일을 입력해주세요.");
+      return;
+    }
+
+    if (!form.title.trim()) {
+      toast.error("문의 제목을 입력해주세요.");
+      return;
+    }
+
+    if (!form.desc.trim()) {
+      toast.error("문의 내용을 입력해주세요.");
+      return;
+    }
+
+    if (!isAgree) {
+      toast.error("개인정보 수집 및 이용에 동의해주세요.");
+      return;
+    }
+
+    // 문의ID 생성
+    const inquiryId = `INQ-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+
+    //
+    const inquiryForm = { id: inquiryId, ...form };
+
+    createInquiry(inquiryForm, {
+      onSuccess: () => {
+        navigate("/inquiry/success");
+        setInquiry(inquiryId, form.category, form.title);
+      },
+      onError: () => {
+        navigate("/inquiry/failed");
+      },
+      onSettled: () => {
+        setForm(initForm);
+        setIsAgree(false);
+      },
+    });
   };
   return (
     <>
@@ -95,9 +116,10 @@ export default function Inquiry() {
               <select
                 id="category"
                 name="category"
-                value={formData.category}
+                value={form.category}
                 onChange={handleForm}
                 autoComplete="off"
+                disabled={isCreating}
                 className="border border-(--line) w-full py-3 px-3.5 text-base focus:outline-(--brass)"
                 required
               >
@@ -107,11 +129,6 @@ export default function Inquiry() {
                 <option value="as문의">A/S 문의</option>
                 <option value="기타">기타</option>
               </select>
-              {formError.category && (
-                <strong className="text-(--danger) text-xs">
-                  * 문의 유형을 선택해주세요.
-                </strong>
-              )}
             </div>
 
             <div className="flex flex-col lg:flex-row gap-4">
@@ -127,14 +144,10 @@ export default function Inquiry() {
                   placeholder="홍길동"
                   onChange={handleForm}
                   autoComplete="off"
-                  value={formData.name}
+                  disabled={isCreating}
+                  value={form.name}
                   className="w-full border border-(--line) focus:outline-(--brass) py-3 px-3.5"
                 />
-                {formError.name && (
-                  <strong className="text-(--danger) text-xs">
-                    * 이름을 작성해주세요.
-                  </strong>
-                )}
               </div>
               {/* call */}
               <div className="w-full flex flex-col gap-2">
@@ -148,14 +161,10 @@ export default function Inquiry() {
                   placeholder="010-0000-0000"
                   onChange={handleForm}
                   autoComplete="off"
-                  value={formData.call}
+                  value={form.call}
+                  disabled={isCreating}
                   className="w-full border border-(--line) focus:outline-(--brass) py-3 px-3.5"
                 />
-                {formError.call && (
-                  <strong className="text-(--danger) text-xs">
-                    * 연락처를 작성해주세요.
-                  </strong>
-                )}
               </div>
             </div>
             {/* email */}
@@ -170,28 +179,25 @@ export default function Inquiry() {
                 placeholder="example@orbitstore.com"
                 onChange={handleForm}
                 autoComplete="off"
-                value={formData.email}
+                value={form.email}
+                disabled={isCreating}
                 className="w-full border border-(--line) focus:outline-(--brass) py-3 px-3.5"
               />
-              {formError.email && (
-                <strong className="text-(--danger) text-xs">
-                  * 이메일을 작성해주세요.
-                </strong>
-              )}
             </div>
             {/* order */}
             <div className="w-full flex flex-col gap-2">
-              <label htmlFor="order" className="text-(--ink-soft)">
+              <label htmlFor="orderId" className="text-(--ink-soft)">
                 주문번호<span className="text-(--muted)"> (해당 시)</span>
               </label>
               <input
                 type="text"
-                id="order"
-                name="order"
+                id="orderId"
+                name="orderId"
                 placeholder="예: ORD-1784530205960-663"
                 onChange={handleForm}
                 autoComplete="off"
-                value={formData.order}
+                value={form.orderId}
+                disabled={isCreating}
                 className="w-full border border-(--line) focus:outline-(--brass) py-3 px-3.5"
               />
             </div>
@@ -207,14 +213,10 @@ export default function Inquiry() {
                 placeholder="문의 제목을 입력해주세요."
                 onChange={handleForm}
                 autoComplete="off"
-                value={formData.title}
+                value={form.title}
+                disabled={isCreating}
                 className="w-full border border-(--line) focus:outline-(--brass) py-3 px-3.5"
               />
-              {formError.title && (
-                <strong className="text-(--danger) text-xs">
-                  * 문의 제목을 작성해주세요.
-                </strong>
-              )}
             </div>
             {/* desc */}
             <div className="w-full flex flex-col gap-2">
@@ -227,14 +229,10 @@ export default function Inquiry() {
                 placeholder="문의 내용을 상세히 작성해주세요."
                 onChange={handleForm}
                 autoComplete="off"
-                value={formData.desc}
+                value={form.desc}
+                disabled={isCreating}
                 className="w-full border border-(--line) focus:outline-(--brass) py-3 px-3.5 min-h-35 resize-none"
               />
-              {formError.desc && (
-                <strong className="text-(--danger) text-xs">
-                  * 문의 내용을 작성해주세요.
-                </strong>
-              )}
             </div>
 
             <div className="w-full flex gap-2">
@@ -243,6 +241,7 @@ export default function Inquiry() {
                 name="agree"
                 id="agree"
                 checked={isAgree}
+                disabled={isCreating}
                 onChange={ToggleAgree}
               />
               <label htmlFor="agree" className="text-(--ink-soft) text-xs">
@@ -253,6 +252,7 @@ export default function Inquiry() {
 
             <button
               type="submit"
+              disabled={isCreating}
               className="w-full text-(--bg) bg-(--brass) py-3 px-6"
             >
               문의 접수하기

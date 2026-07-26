@@ -9,6 +9,7 @@ import Event from "./routes/pages/event/Event";
 import EventDetail from "./routes/pages/event/Event.Detail";
 import Faq from "./routes/pages/faq/Faq";
 import Inquiry from "./routes/pages/inquiry/Inquiry";
+import InquirySuccess from "./routes/pages/inquiry/InquirySuccess";
 import Cart from "./routes/pages/cart/Cart";
 import Checkout from "./routes/pages/checkout/Checkout";
 import Signup from "./routes/pages/auth/Signup";
@@ -29,21 +30,42 @@ const router = createBrowserRouter([
     Component: Default,
     children: [
       { path: "/", Component: Home },
+      // 브랜드
       { path: "/brand", Component: Brand },
+      // auth(로그인, 회원기입)
       { path: "/signup", Component: Signup },
       { path: "/login", Component: Login },
+
+      // 제품
       { path: "/product", Component: Product },
       { path: "/product/:id", Component: ProductDetail },
+
+      // 비교
       { path: "/compare", Component: Compare },
+
+      // 이벤트
       { path: "/event", Component: Event },
       { path: "/event/:id", Component: EventDetail },
+
+      // faq
       { path: "/faq", Component: Faq },
+
+      // 문의
       { path: "/inquiry", Component: Inquiry },
+      { path: "/inquiry/success", Component: InquirySuccess },
+
+      // 장바구니
       { path: "/cart", Component: Cart },
+
+      // 결제
       { path: "/checkout", Component: Checkout },
+
+      // 비회원
       { path: "/guest", Component: Guest },
       { path: "/guest/order", Component: GuestOrder },
       { path: "/guest/inquiry", Component: GuestInquiry },
+
+      // 마이페이지
       {
         path: "/mypage",
         Component: MyPage,
