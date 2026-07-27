@@ -1,43 +1,24 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Link, useNavigate, useParams } from "react-router";
-import { fetchOneData } from "../../../api/fetchData";
-import { ProductDetailSkeleton } from "../../../components/Skeleton";
 import { Copy, Minus, Plus } from "lucide-react";
 import { useCartStore } from "../../../store/useCartStore";
 import { useCheckoutStore } from "../../../store/useCheckoutStore";
 import { useCompareStore } from "../../../store/useCompareStore";
+import { useProductQuery } from "../../../hook/product/useProductQuery";
 import toast from "react-hot-toast";
+import { ProductDetailSkeleton } from "../../../components/Skeleton";
 
 export default function ProductDetail() {
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(false);
-  const [data, setData] = useState<Product>();
   const { id } = useParams();
+  if (!id) {
+    toast.error("상품 조회에 실패했습니다.");
+  }
+  const { data, isLoading, error, isError } = useProductQuery(id!);
   const [count, setCount] = useState(1);
   const { addItem } = useCartStore();
   const { setOrderItem } = useCheckoutStore();
   const navigate = useNavigate();
   const { compareId, addProduct } = useCompareStore();
-
-  useEffect(() => {
-    if (!id) return;
-    const loadData = async () => {
-      try {
-        setIsLoading(true);
-        setError(false);
-
-        const product = await fetchOneData("product", id);
-
-        setData(product);
-      } catch (error) {
-        setError(true);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    loadData();
-  }, [id]);
 
   const handleDecrease = () => {
     if (count <= 1) return;
@@ -47,12 +28,6 @@ export default function ProductDetail() {
   const handleIncrease = () => {
     setCount((count) => count + 1);
   };
-
-  if (isLoading || !data) return <ProductDetailSkeleton />;
-
-  if (error) {
-    toast.error("제품 정보를 불러올 수 없습니다.", { id: "product-error" });
-  }
 
   const handleAddCart = () => {
     addItem({
@@ -89,6 +64,12 @@ export default function ProductDetail() {
 
     navigate("/checkout");
   };
+
+  if (isLoading || !data) return <ProductDetailSkeleton />;
+
+  if (isError && error) {
+    toast.error("제품 정보를 불러올 수 없습니다.", { id: "product-error" });
+  }
 
   return (
     <section className="py-10">

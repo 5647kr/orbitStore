@@ -19,6 +19,7 @@ export const useCompareStore = create<CompareStore>()(persist((set, get) => ({
 
     if (compareId.includes(product.id)) {
       removeProduct(product);
+      return;
     }
     // 최대 4개까지 비교함 저장 가능
     if (compareId.length >= 4) {
@@ -30,6 +31,7 @@ export const useCompareStore = create<CompareStore>()(persist((set, get) => ({
     // 4개 미만이거나 없으면 추가
     toast.success(`${product.title} - 비교함에 담았습니다.`, {
       id: "compare-add",
+      duration: 800,
     });
 
     set((state) => ({
@@ -41,6 +43,7 @@ export const useCompareStore = create<CompareStore>()(persist((set, get) => ({
   removeProduct: (product) => {
     toast.error(`${product.title} - 비교함에서 제거되었습니다.`, {
       id: "compare-delete",
+      duration: 800,
     });
     set((state) => ({
       compareId: state.compareId.filter((id) => id !== product.id),
