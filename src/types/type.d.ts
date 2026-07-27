@@ -1,10 +1,3 @@
-interface Faq {
-  id: string;
-  title: string;
-  desc: string;
-  category: string;
-}
-
 interface InsertInquiry {
   category: string;
   name: string;
