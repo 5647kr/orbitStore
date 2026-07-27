@@ -23,6 +23,9 @@ import Guest from "./routes/pages/guest/Guest";
 import GuestOrder from "./routes/pages/guest/GuestOrder";
 import MyPageAccount from "./routes/pages/mypage/page/MyPageAccount";
 import GuestInquiry from "./routes/pages/guest/GuestInquiry";
+import OrderSuccess from "./routes/pages/order/OrderSuccess";
+import OrderFailed from "./routes/pages/order/OrderFailed";
+
 
 const router = createBrowserRouter([
   {
@@ -59,6 +62,8 @@ const router = createBrowserRouter([
 
       // 결제
       { path: "/checkout", Component: Checkout },
+      { path: "/order/success", Component: OrderSuccess },
+      { path: "/order/failed", Component: OrderFailed },
 
       // 비회원
       { path: "/guest", Component: Guest },

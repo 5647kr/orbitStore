@@ -1,11 +1,14 @@
 import { useMemo, useState } from "react";
 import Hero from "../../../components/Hero";
-import { useCheckoutStore } from "../../../store/useCheckoutStore";
 import AddressModal from "../../../components/AddressModal";
 import type { Address } from "react-daum-postcode";
 import { useAuthStore } from "../../../store/useAuthStore";
 import { useNavigate } from "react-router";
 import toast from "react-hot-toast";
+import { useCheckoutMutation } from "../../../hook/checkout/useCheckoutMutation";
+import { useCheckoutStore } from "../../../store/checkout/useCheckoutStore";
+import { useCartStore } from "../../../store/cart/useCartStore";
+import { useOrderStore } from "../../../store/order/useOrderStore";
 
 interface CheckoutForm {
   id: string;
@@ -18,9 +21,13 @@ interface CheckoutForm {
 }
 
 export default function Checkout() {
-  const { user, isLoggedIn } = useAuthStore();
+  const { user } = useAuthStore();
   const navigate = useNavigate();
-  const { requestCheckout } = useCheckoutStore();
+  const { checkoutList, resetCheckoutList } = useCheckoutStore();
+  const { resetCart } = useCartStore();
+  const { setOrder } = useOrderStore();
+  const { mutate: createCheckout, isPending: isCreating } =
+    useCheckoutMutation();
 
   const initForm = {
     id: user?.id || `GUEST_${crypto.randomUUID()}`,
@@ -33,9 +40,7 @@ export default function Checkout() {
   };
 
   const [addressModal, setAddressModal] = useState(false);
-  const { orderItem } = useCheckoutStore();
   const [checkoutForm, setCheckoutForm] = useState(initForm);
-  const [checkoutError, setCheckoutError] = useState(initForm);
   const [isAgree, setIsAgree] = useState({
     agree1: false,
     agree2: false,
@@ -79,65 +84,76 @@ export default function Checkout() {
   const isAllAgree = isAgree.agree1 && isAgree.agree2;
 
   const totalPrice = useMemo(() => {
-    return orderItem.reduce((acc, item) => acc + item.price * item.quantity, 0);
-  }, [orderItem]);
+    return checkoutList.reduce(
+      (acc, item) => acc + item.price * item.quantity,
+      0,
+    );
+  }, [checkoutList]);
 
-  const handleCheckout = async () => {
-    try {
-      const formError = {} as CheckoutForm;
+  const submitCheckout = (e: React.SubmitEvent<HTMLFormElement>) => {
+    e.preventDefault();
 
-      if (!isAgree.agree1 || !isAgree.agree2) {
-        window.alert("약관에 동의해주세요.");
-        return;
-      }
-
-      if (!checkoutForm.name.trim()) formError.name = "이름을 입력해주세요.";
-      if (!checkoutForm.call.trim()) formError.call = "연락처를 입력해주세요.";
-      if (!checkoutForm.postCode.trim())
-        formError.postCode = "주소를 확인해주세요.";
-      if (!checkoutForm.basicAddress.trim())
-        formError.basicAddress = "주소를 확인해주세요..";
-      if (!checkoutForm.detailAddress.trim())
-        formError.detailAddress = "상세주소를 입력해주세요.";
-      if (!checkoutForm.memo.trim()) formError.memo = "배송 요청을 남겨주세요.";
-
-      if (Object.keys(formError).length > 0) {
-        setCheckoutError(formError);
-        return;
-      }
-
-      const payment = {
-        buyer: checkoutForm,
-        items: orderItem,
-        totalPrice: totalPrice,
-      };
-
-      const result = await requestCheckout(payment);
-
-      if (result.success) {
-        toast.success(
-          "결제가 성공적으로 완료되었습니다. 주문내역으로 이동합니다.",
-          { id: "pay-success", duration: 3000 },
-        );
-
-        if (isLoggedIn) {
-          setTimeout(() => {
-            navigate("/mypage/order");
-          }, 3000);
-        } else {
-          setTimeout(() => {
-            navigate("/guest");
-          }, 3000);
-        }
-      } else {
-        toast.error("결제에 실패했습니다. 다시 시도해주세요.", {
-          id: "pay-failed",
-          duration: 3000,
-        });
-      }
-    } catch (error) {
-      console.log(error);
+    if (!isAgree.agree1 || !isAgree.agree2) {
+      toast.error("약관에 동의해주세요.");
+      return;
     }
+
+    if (checkoutForm.name.trim() === "") {
+      toast.error("이름을 입력해주세요.");
+      return;
+    }
+
+    if (checkoutForm.call.trim() === "") {
+      toast.error("연락처를 입력해주세요.");
+      return;
+    }
+
+    if (checkoutForm.postCode.trim() === "") {
+      toast.error("주소를 확인해주세요.");
+      return;
+    }
+
+    if (checkoutForm.basicAddress.trim() === "") {
+      toast.error("주소를 확인해주세요.");
+      return;
+    }
+
+    if (checkoutForm.detailAddress.trim() === "") {
+      toast.error("상세주소를 입력해주세요.");
+      return;
+    }
+    // 주문ID 생성
+    const orderId = `ORD-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+
+    const form = {
+      buyer: checkoutForm,
+      items: checkoutList,
+      totalPrice: totalPrice,
+    };
+
+    createCheckout(
+      { orderId, form },
+      {
+        onSuccess: () => {
+          navigate("/order/success");
+          setOrder(
+            orderId,
+            checkoutList,
+            `${checkoutForm.basicAddress} ${checkoutForm.detailAddress}`,
+            totalPrice,
+          );
+          resetCheckoutList();
+          resetCart();
+        },
+        onError: () => {
+          navigate("/order/failed");
+        },
+        onSettled: () => {
+          setCheckoutForm(initForm);
+          setIsAgree({ agree1: false, agree2: false });
+        },
+      },
+    );
   };
 
   return (
@@ -160,7 +176,11 @@ export default function Checkout() {
                 배송 정보
               </h3>
 
-              <form className="flex flex-col gap-4">
+              <form
+                id="checkoutForm"
+                onSubmit={submitCheckout}
+                className="flex flex-col gap-4"
+              >
                 {/* 이름, 연락처 */}
                 <div className="flex flex-col lg:flex-row gap-4">
                   {/* name */}
@@ -176,13 +196,9 @@ export default function Checkout() {
                       autoComplete="off"
                       onChange={handleForm}
                       value={checkoutForm.name}
+                      disabled={isCreating}
                       className="w-full border border-(--line) focus:outline-(--brass) py-3 px-3.5"
                     />
-                    {checkoutError.name && (
-                      <strong className="text-(--danger) text-xs">
-                        * 이름을 작성해주세요.
-                      </strong>
-                    )}
                   </div>
                   {/* call */}
                   <div className="w-full flex flex-col gap-2">
@@ -200,13 +216,9 @@ export default function Checkout() {
                       autoComplete="off"
                       onChange={handleForm}
                       value={checkoutForm.call}
+                      disabled={isCreating}
                       className="w-full border border-(--line) focus:outline-(--brass) py-3 px-3.5"
                     />
-                    {checkoutError.call && (
-                      <strong className="text-(--danger) text-xs">
-                        * 연락처 작성해주세요.
-                      </strong>
-                    )}
                   </div>
                 </div>
 
@@ -224,21 +236,18 @@ export default function Checkout() {
                       readOnly
                       autoComplete="off"
                       value={checkoutForm.postCode}
+                      disabled={isCreating}
                       className="w-full border border-(--line) focus:outline-(--brass) py-3 px-3.5"
                     />
                     <button
                       type="button"
+                      disabled={isCreating}
                       className="border border-(--navy) py-2 px-4 text-xs text-nowrap hover:boder-(--navy) hover:bg-(--navy) hover:text-(--bg)"
                       onClick={() => setAddressModal(true)}
                     >
                       주소검색
                     </button>
                   </div>
-                  {checkoutError.postCode && (
-                    <strong className="text-(--danger) text-xs">
-                      * 주소를 검색해주세요.
-                    </strong>
-                  )}
                 </div>
                 {/* 기본 주소 */}
                 <div className="w-full flex flex-col gap-2">
@@ -253,13 +262,9 @@ export default function Checkout() {
                     autoComplete="off"
                     readOnly
                     value={checkoutForm.basicAddress}
+                    disabled={isCreating}
                     className="w-full border border-(--line) focus:outline-(--brass) py-3 px-3.5"
                   />
-                  {checkoutError.basicAddress && (
-                    <strong className="text-(--danger) text-xs">
-                      * 주소를 검색해주세요.
-                    </strong>
-                  )}
                 </div>
                 {/* 상세 주소 */}
                 <div className="w-full flex flex-col gap-2">
@@ -274,13 +279,9 @@ export default function Checkout() {
                     autoComplete="off"
                     onChange={handleForm}
                     value={checkoutForm.detailAddress}
+                    disabled={isCreating}
                     className="w-full border border-(--line) focus:outline-(--brass) py-3 px-3.5"
                   />
-                  {checkoutError.detailAddress && (
-                    <strong className="text-(--danger) text-xs">
-                      * 상세주소를 작성해주세요.
-                    </strong>
-                  )}
                 </div>
 
                 {/* 배송 메모 */}
@@ -292,6 +293,7 @@ export default function Checkout() {
                     autoComplete="off"
                     onChange={handleForm}
                     value={checkoutForm.memo}
+                    disabled={isCreating}
                     className="border border-(--line) w-full py-3 px-3.5 text-base focus:outline-(--brass)"
                   >
                     <option value="">배송 메모를 선택해주세요.</option>
@@ -303,11 +305,6 @@ export default function Checkout() {
                       배송 전 연락 부탁드려요
                     </option>
                   </select>
-                  {checkoutError.memo && (
-                    <strong className="text-(--danger) text-xs">
-                      * 배송요청을 선택해주세요.
-                    </strong>
-                  )}
                 </div>
               </form>
             </div>
@@ -324,7 +321,7 @@ export default function Checkout() {
               {/* 주문 상품 */}
               <div className="border border-(--line) p-6">
                 <ul>
-                  {orderItem.map((item) => (
+                  {checkoutList.map((item) => (
                     <li
                       key={item.id}
                       className="py-5 border-b border-(--line) flex flex-col gap-4 lg:flex-row lg:items-center"
@@ -411,6 +408,7 @@ hover:after:w-6 hover:after:h-6 hover:after:border-(--brass)
                   <input
                     type="checkbox"
                     checked={isAllAgree}
+                    disabled={isCreating}
                     onChange={toggleAllAgree}
                   />
                   전체 동의
@@ -420,6 +418,7 @@ hover:after:w-6 hover:after:h-6 hover:after:border-(--brass)
                     type="checkbox"
                     name="agree1"
                     onChange={toggleAgree}
+                    disabled={isCreating}
                     checked={isAgree.agree1}
                   />
                   주문 내용 확인 및 결제 진행에 동의합니다.
@@ -430,6 +429,7 @@ hover:after:w-6 hover:after:h-6 hover:after:border-(--brass)
                     type="checkbox"
                     name="agree2"
                     onChange={toggleAgree}
+                    disabled={isCreating}
                     checked={isAgree.agree2}
                   />
                   개인정보 수집 및 이용에 동의합니다.
@@ -471,7 +471,8 @@ hover:after:w-6 hover:after:h-6 hover:after:border-(--brass)
 
             <button
               type="submit"
-              onClick={handleCheckout}
+              form="checkoutForm"
+              disabled={isCreating}
               className="py-3 px-6 text-sm text-center w-full mt-5.5 bg-(--brass) text-(--bg)"
             >
               ₩{totalPrice.toLocaleString("ko-KR") || 0} 결제하기
