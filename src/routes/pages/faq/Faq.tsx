@@ -1,39 +1,48 @@
 import { useEffect, useState } from "react";
 import Hero from "../../../components/Hero";
-import { fetchData } from "../../../api/fetchData";
-import { Minus, Plus } from "lucide-react";
+import { Loader2, Minus, Plus } from "lucide-react";
 import { Link } from "react-router";
+import { useFaqFilterStore } from "../../../store/faq/useFaqFilterStore";
+import { useAllFaqQuery } from "../../../hook/faq/useFaqQuery";
+import { useInView } from "react-intersection-observer";
+import toast from "react-hot-toast";
 
 export default function Faq() {
-  const [faqList, setFaqList] = useState<Faq[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [category, setCategory] = useState("전체");
+  const {
+    data,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    isLoading,
+    error,
+  } = useAllFaqQuery();
+  const { category, setFilter } = useFaqFilterStore();
   const [activeItem, setActiveItem] = useState<string | null>(null);
-
-  useEffect(() => {
-    const loadData = async () => {
-      try {
-        setIsLoading(true);
-
-        const { data } = await fetchData("faq", category);
-
-        setFaqList(data);
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    loadData();
-  }, [category]);
+  const { ref, inView } = useInView({ threshold: 0.5 });
 
   const handleFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setCategory(e.target.value);
+    setFilter(e.target.value);
   };
 
   const handleActiveItem = (id: string) => {
     activeItem === id ? setActiveItem(null) : setActiveItem(id);
   };
+
+  useEffect(() => {
+    if (inView && hasNextPage && !isFetchingNextPage) {
+      fetchNextPage();
+    }
+  }, [inView, hasNextPage, isFetchingNextPage, fetchNextPage]);
+
+  useEffect(() => {
+    if (error) {
+      toast.error("목록을 불러오는 중 오류가 발생했습니다.", {
+        id: "read-product-error",
+      });
+    }
+  }, [error]);
+
+  const faqs = data?.pages.flatMap((page) => page.data) ?? [];
 
   return (
     <>
@@ -143,7 +152,7 @@ export default function Faq() {
             ))
           ) : (
             <>
-              {faqList.map((item: Faq, index) => (
+              {faqs.map((item: Faq, index: number) => (
                 <li key={item.id} className="border-b border-(--line)">
                   <div>
                     <button
@@ -169,6 +178,12 @@ export default function Faq() {
             </>
           )}
         </ul>
+
+        <div ref={ref} className="py-5 flex justify-center">
+          {isFetchingNextPage && (
+            <Loader2 className="animate-spin text-(--ink-sub)" size={24} />
+          )}
+        </div>
       </section>
 
       <section className="max-w-7xl p-6 mx-auto bg-(--surface) my-20 text-center">
