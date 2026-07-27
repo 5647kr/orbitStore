@@ -1,50 +1,46 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import Hero from "../../../components/Hero";
-import { fetchData } from "../../../api/fetchData";
 import { ProductSkeleton } from "../../../components/Skeleton";
 import { ProductItem } from "../../../components/Item";
+import { useAllProductQuery } from "../../../hook/product/useProductQuery";
+import { useProductFilterStore } from "../../../store/product/useProductFilterStore";
+import { useInView } from "react-intersection-observer";
+import toast from "react-hot-toast";
+import { Loader2 } from "lucide-react";
 
 export default function Product() {
-  const [isLoading, setIsLoading] = useState(false);
-  const [data, setData] = useState<Product[]>([]);
-  const [filter, setFilter] = useState({ category: "전체", sort: "최신순" });
+  const {
+    data,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    isLoading,
+    error,
+  } = useAllProductQuery();
+  const { filter, setFilter } = useProductFilterStore();
+  const { ref, inView } = useInView({ threshold: 0.5 });
 
   useEffect(() => {
-    const loadData = async () => {
-      try {
-        setIsLoading(true);
-        const { data } = await fetchData(
-          "product",
-          filter.category,
-          filter.sort,
-        );
+    if (inView && hasNextPage && !isFetchingNextPage) {
+      fetchNextPage();
+    }
+  }, [inView, hasNextPage, isFetchingNextPage, fetchNextPage]);
 
-        setData(data);
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
+  useEffect(() => {
+    if (error) {
+      toast.error("목록을 불러오는 중 오류가 발생했습니다.", {
+        id: "read-product-error",
+      });
+    }
+  }, [error]);
 
-    loadData();
-  }, [filter.category, filter.sort]);
-
-  // 필터링 처리
-  const handleFilterChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
-  ) => {
-    setFilter((filter) => ({
-      ...filter,
-      [e.target.name]: e.target.value,
-    }));
-  };
+  const products = data?.pages.flatMap((page) => page.data) ?? [];
 
   return (
     <>
       <Hero
         title="전체 제품"
-        subTitle={`목적과 예산에 맞는 광학계를 찾아보세요. 총 ${data.length || 0}종의 제품이 있습니다.`}
+        subTitle="목적과 예산에 맞는 광학계를 찾아보세요."
       />
 
       {/* 제품 필터 */}
@@ -61,10 +57,10 @@ export default function Product() {
                   <input
                     type="radio"
                     value="전체"
-                    name="category"
+                    name={filter.category}
                     className="hidden"
                     checked={filter.category === "전체"}
-                    onChange={handleFilterChange}
+                    onChange={setFilter}
                   />
                 </label>
               </li>
@@ -76,10 +72,10 @@ export default function Product() {
                   <input
                     type="radio"
                     value="굴절망원경"
-                    name="category"
+                    name={filter.category}
                     className="hidden"
                     checked={filter.category === "굴절망원경"}
-                    onChange={handleFilterChange}
+                    onChange={setFilter}
                   />
                 </label>
               </li>
@@ -91,10 +87,10 @@ export default function Product() {
                   <input
                     type="radio"
                     value="반사망원경"
-                    name="category"
+                    name={filter.category}
                     className="hidden"
                     checked={filter.category === "반사망원경"}
-                    onChange={handleFilterChange}
+                    onChange={setFilter}
                   />
                 </label>
               </li>
@@ -106,10 +102,10 @@ export default function Product() {
                   <input
                     type="radio"
                     value="돕소니안"
-                    name="category"
+                    name={filter.category}
                     className="hidden"
                     checked={filter.category === "돕소니안"}
-                    onChange={handleFilterChange}
+                    onChange={setFilter}
                   />
                 </label>
               </li>
@@ -118,9 +114,9 @@ export default function Product() {
           {/* 정렬 카테고리 */}
           <div>
             <select
-              name="sort"
+              name={filter.sort}
               className="py-2 px-4 border border-(--line) focus:outline-none cursor-pointer"
-              onChange={handleFilterChange}
+              onChange={setFilter}
             >
               <option value="최신순">최신순</option>
               <option value="높은가격순">높은 가격순</option>
@@ -139,12 +135,18 @@ export default function Product() {
                   <ProductSkeleton />
                 </li>
               ))
-            : data.map((item: Product) => (
+            : products.map((item: Product) => (
                 <li key={item.id}>
                   <ProductItem {...item} />
                 </li>
               ))}
         </ul>
+
+        <div ref={ref} className="py-5 flex justify-center">
+          {isFetchingNextPage && (
+            <Loader2 className="animate-spin text-(--ink-sub)" size={24} />
+          )}
+        </div>
       </section>
     </>
   );
