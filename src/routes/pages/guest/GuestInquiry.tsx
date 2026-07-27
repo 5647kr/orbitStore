@@ -1,13 +1,25 @@
-import React from "react";
-import { useGuestStore } from "../../../store/useGuestStore";
 import Hero from "../../../components/Hero";
 import { InquiryItem } from "../../../components/Item";
-import { Link } from "react-router";
+import { Link, useLocation, useNavigate } from "react-router";
+import { useGuestInquiryQuery } from "../../../hook/guest/useGuestQuery";
+import { useEffect } from "react";
 
 export default function GuestInquiry() {
-  const { guestData } = useGuestStore();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const form = location.state?.form;
 
-  const Inquiries = guestData as Inquiry[];
+  const { data: inquiries } = useGuestInquiryQuery(form);
+
+  useEffect(() => {
+    if (!form) {
+      navigate("/guest", { replace: true });
+    }
+  }, [form, navigate]);
+
+  if (!inquiries) return null;
+
+  console.log(inquiries);
   return (
     <>
       <Hero
@@ -17,7 +29,7 @@ export default function GuestInquiry() {
 
       <section className="max-w-7xl p-4 mx-auto py-5">
         <ul className="flex flex-col gap-5">
-          {Inquiries.map((inquiry: Inquiry) => (
+          {inquiries.map((inquiry: Inquiry) => (
             <li key={inquiry.id}>
               <InquiryItem inquiry={inquiry} />
             </li>
