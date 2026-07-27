@@ -1,12 +1,25 @@
-import { Link } from "react-router";
+import { Link, useLocation, useNavigate } from "react-router";
 import Hero from "../../../components/Hero";
 import { OrderItem } from "../../../components/Item";
-import { useGuestStore } from "../../../store/useGuestStore";
+import { useGuestOrderQuery } from "../../../hook/guest/useGuestQuery";
+import { useEffect } from "react";
 
 export default function GuestOrder() {
-  const { guestData } = useGuestStore();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const form = location.state?.form;
 
-  const orders = guestData as Order[];
+  const { data: orders } = useGuestOrderQuery(form);
+  // URL 직접 입력 등 예외적인 방어 코드만 유지
+
+  useEffect(() => {
+    if (!form) {
+      navigate("/guest", { replace: true });
+    }
+  }, [form, navigate]);
+
+  if (!orders) return null;
+
   return (
     <>
       <Hero
