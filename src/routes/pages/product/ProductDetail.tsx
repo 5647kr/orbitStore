@@ -1,12 +1,13 @@
 import { useState } from "react";
 import { Link, useNavigate, useParams } from "react-router";
 import { Copy, Minus, Plus } from "lucide-react";
-import { useCartStore } from "../../../store/useCartStore";
-import { useCheckoutStore } from "../../../store/useCheckoutStore";
+
 import { useCompareStore } from "../../../store/useCompareStore";
 import { useProductQuery } from "../../../hook/product/useProductQuery";
 import toast from "react-hot-toast";
 import { ProductDetailSkeleton } from "../../../components/Skeleton";
+import { useCartStore } from "../../../store/cart/useCartStore";
+import { useCheckoutStore } from "../../../store/checkout/useCheckoutStore";
 
 export default function ProductDetail() {
   const { id } = useParams();
@@ -16,7 +17,7 @@ export default function ProductDetail() {
   const { data, isLoading, error, isError } = useProductQuery(id!);
   const [count, setCount] = useState(1);
   const { addItem } = useCartStore();
-  const { setOrderItem } = useCheckoutStore();
+  const { setCheckoutList } = useCheckoutStore();
   const navigate = useNavigate();
   const { compareId, addProduct } = useCompareStore();
 
@@ -49,7 +50,7 @@ export default function ProductDetail() {
   };
 
   const handleCheckout = () => {
-    setOrderItem([
+    setCheckoutList([
       {
         id: data?.id,
         img: data?.img,

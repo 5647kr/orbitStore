@@ -1,6 +1,6 @@
 import { ShoppingCart } from "lucide-react";
-import { useCartStore } from "../../../../store/useCartStore";
 import { Link } from "react-router";
+import { useCartStore } from "../../../../store/cart/useCartStore";
 
 export default function MyPageCart() {
   const { cartList, removeItem } = useCartStore();

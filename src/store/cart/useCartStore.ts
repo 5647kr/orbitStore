@@ -6,7 +6,7 @@ interface CartStoreType {
   addItem: (item: CartList) => void;
   removeItem: (id: string) => void;
   updateQuantity: (id: string, quantity: number) => void;
-  clearCart: () => void;
+  resetCart: () => void;
 }
 
 export const useCartStore = create<CartStoreType>()(
@@ -26,7 +26,7 @@ export const useCartStore = create<CartStoreType>()(
               cartList: state.cartList.map((product) =>
                 product.id === item.id
                   ? { ...product, quantity: item.quantity + item.quantity }
-                  : item,
+                  : item
               ),
             };
           }
@@ -43,14 +43,12 @@ export const useCartStore = create<CartStoreType>()(
       updateQuantity: (id, quantity) =>
         set((state) => ({
           cartList: state.cartList.map((item) =>
-            item.id === id
-              ? { ...item, quantity: Math.max(1, quantity) }
-              : item,
+            item.id === id ? { ...item, quantity: Math.max(1, quantity) } : item
           ),
         })),
 
       // 주문 완료시 장바구니 비우기
-      clearCart: () => {
+      resetCart: () => {
         set({ cartList: [] });
       },
     }),
