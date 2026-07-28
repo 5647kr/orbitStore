@@ -1,43 +1,53 @@
 import { useEffect, useState } from "react";
 import { useAuthStore } from "../../../../store/useAuthStore";
-import { fetchInQuiry } from "../../../../api/fetchData";
 import toast from "react-hot-toast";
-import { MessageCircleQuestionMark } from "lucide-react";
-import { Link } from "react-router";
+import { Loader2, MessageCircleQuestionMark } from "lucide-react";
+import { Link, useNavigate } from "react-router";
+import { useUserInquiryQuery } from "../../../../hook/inquiry/useInquiryQuery";
+import { useInView } from "react-intersection-observer";
 
 export default function MyPageInquiry() {
   const { user } = useAuthStore();
-  const [inquiryList, setInquiryList] = useState<Inquiry[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const navigate = useNavigate();
+  const { ref, inView } = useInView({ threshold: 0.5 });
   const [findInquiry, setFindInquiry] = useState<Inquiry | null>(null);
 
   useEffect(() => {
-    const getInquiries = async () => {
-      if (!user) return;
+    if (!user) {
+      toast.error("회원정보를 찾을 수 없습니다. 홈페이지로 돌아갑니다.");
+      navigate("/");
+      return;
+    }
+  }, [user]);
 
-      try {
-        setIsLoading(true);
+  const {
+    data,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    isLoading,
+    error,
+  } = useUserInquiryQuery({ name: user?.name, call: user?.call });
 
-        const { data } = await fetchInQuiry({
-          name: user.name,
-          call: user.call,
-          email: user.email,
-        });
+  useEffect(() => {
+    if (inView && hasNextPage && !isFetchingNextPage) {
+      fetchNextPage();
+    }
+  }, [inView, hasNextPage, isFetchingNextPage, fetchNextPage]);
 
-        setInquiryList(data || []);
-      } catch (error) {
-        toast.error("문의 내역 조회에 실패하였습니다.");
-      } finally {
-        setIsLoading(false);
-      }
-    };
+  useEffect(() => {
+    if (error) {
+      toast.error("문의 내역을 불러오는 중 오류가 발생했습니다.", {
+        id: "read-inquiry-error",
+      });
+    }
+  }, [error]);
 
-    getInquiries();
-  }, [user?.id, user?.name, user?.call, user?.email]);
+  const inquiry = data?.pages.flatMap((page) => page.data) ?? [];
 
   const openModal = (id: string) => {
     if (!findInquiry) {
-      const target = inquiryList.find((item) => item.id === id);
+      const target = inquiry.find((item) => item.id === id);
       if (target) setFindInquiry(target);
     }
   };
@@ -71,66 +81,73 @@ export default function MyPageInquiry() {
 
   return (
     <>
-      {!isLoading && inquiryList.length > 0 ? (
-        <table className="w-full">
-          <thead className="border-b border-(--line)">
-            <tr>
-              <th className="py-2.5 w-1/6 text-(--muted) text-sm font-normal">
-                유형
-              </th>
-              <th className="py-2.5 w-2/6 text-(--muted) text-sm font-normal">
-                제목
-              </th>
-              <th className="py-2.5 w-1/6 text-(--muted) text-sm font-normal">
-                접수일
-              </th>
-              <th className="py-2.5 w-1/6 text-(--muted) text-sm font-normal">
-                상태
-              </th>
-              <th className="py-2.5 w-1/6 text-(--muted) text-sm font-normal">
-                상세 보기
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {inquiryList.map((inquiry: Inquiry) => (
-              <tr
-                key={inquiry.id}
-                className="border-b border-(--line) hover:bg-(--surface)"
-              >
-                <td className="w-1/6 text-center text-sm text-(--muted) py-5">
-                  {inquiry.category}
-                </td>
-                <td className="w-2/6 text-center text-sm text-(--ink) font-bold py-5">
-                  {inquiry.title}
-                </td>
-                <td className="w-1/6 text-center text-sm text-(--muted) py-5">
-                  {new Date(inquiry.created_at).toLocaleDateString("ko-KR", {
-                    year: "numeric",
-                    month: "2-digit",
-                    day: "2-digit",
-                  })}
-                </td>
-                <td className="w-1/6 text-center text-sm text-(--muted) py-5">
-                  <span
-                    className={`border py-1 px-2 ${inquiry.answer ? "border-(--ok) text-(--ok)" : "border-(--brass) text-(--brass)"}`}
-                  >
-                    {inquiry.answer ? "답변완료" : "답변대기"}
-                  </span>
-                </td>
-                <td className="w-1/6 text-center text-sm py-5">
-                  <button
-                    type="button"
-                    className="border border-(--navy) py-2 px-4 hover:bg-(--navy) hover:text-(--bg)"
-                    onClick={() => openModal(inquiry.id)}
-                  >
-                    상세 보기
-                  </button>
-                </td>
+      {!isLoading && inquiry.length > 0 ? (
+        <>
+          <table className="w-full">
+            <thead className="border-b border-(--line)">
+              <tr>
+                <th className="py-2.5 w-1/6 text-(--muted) text-sm font-normal">
+                  유형
+                </th>
+                <th className="py-2.5 w-2/6 text-(--muted) text-sm font-normal">
+                  제목
+                </th>
+                <th className="py-2.5 w-1/6 text-(--muted) text-sm font-normal">
+                  접수일
+                </th>
+                <th className="py-2.5 w-1/6 text-(--muted) text-sm font-normal">
+                  상태
+                </th>
+                <th className="py-2.5 w-1/6 text-(--muted) text-sm font-normal">
+                  상세 보기
+                </th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {inquiry.map((item: Inquiry) => (
+                <tr
+                  key={item.id}
+                  className="border-b border-(--line) hover:bg-(--surface)"
+                >
+                  <td className="w-1/6 text-center text-sm text-(--muted) py-5">
+                    {item.category}
+                  </td>
+                  <td className="w-2/6 text-center text-sm text-(--ink) font-bold py-5">
+                    {item.title}
+                  </td>
+                  <td className="w-1/6 text-center text-sm text-(--muted) py-5">
+                    {new Date(item.created_at).toLocaleDateString("ko-KR", {
+                      year: "numeric",
+                      month: "2-digit",
+                      day: "2-digit",
+                    })}
+                  </td>
+                  <td className="w-1/6 text-center text-sm text-(--muted) py-5">
+                    <span
+                      className={`border py-1 px-2 ${item.answer ? "border-(--ok) text-(--ok)" : "border-(--brass) text-(--brass)"}`}
+                    >
+                      {item.answer ? "답변완료" : "답변대기"}
+                    </span>
+                  </td>
+                  <td className="w-1/6 text-center text-sm py-5">
+                    <button
+                      type="button"
+                      className="border border-(--navy) py-2 px-4 hover:bg-(--navy) hover:text-(--bg)"
+                      onClick={() => openModal(item.id)}
+                    >
+                      상세 보기
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          <div ref={ref} className="py-5 flex justify-center">
+            {isFetchingNextPage && (
+              <Loader2 className="animate-spin text-(--ink-sub)" size={24} />
+            )}
+          </div>
+        </>
       ) : (
         <div className="border border-dashed border-(--line) py-23 px-5 flex flex-col items-center">
           <MessageCircleQuestionMark

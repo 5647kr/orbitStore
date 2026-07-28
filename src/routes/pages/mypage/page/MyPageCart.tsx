@@ -47,6 +47,9 @@ hover:after:w-6 hover:after:h-6 hover:after:border-(--brass)
                       <li className="text-sm text-(--navy)">
                         f/{item.apertureRatio}
                       </li>
+                      <li className="text-sm text-(--navy)">
+                        수량 {item.quantity}개
+                      </li>
                     </ul>
                     <button
                       type="button"
