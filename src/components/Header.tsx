@@ -130,7 +130,7 @@ export default function Header() {
                   </button>
                 )}
                 <Link
-                  to="/mypage"
+                  to="/mypage/order"
                   className={`flex border rounded-full w-9 h-9 justify-center items-center hover:border-(--ink) ${myPageActive ? "border-(--ink)" : "border-(--line)"}`}
                 >
                   <UserRound stroke="var(--navy)" strokeWidth="1" size={16} />

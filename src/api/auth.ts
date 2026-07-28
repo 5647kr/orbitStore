@@ -48,6 +48,8 @@ export async function logoutAuth() {
 export async function getUser() {
   const { data: { user } } = await supabase.auth.getUser();
 
+  console.log(user);
+
   if (user) {
     useAuthStore.getState().setLogin({
       id: user?.user_metadata.sub,
@@ -57,10 +59,4 @@ export async function getUser() {
       type: user?.user_metadata.type,
     });
   }
-}
-
-export async function updateAuth(
-  { name, call, password }: { name?: string; call?: string; password?: string },
-) {
-  
 }

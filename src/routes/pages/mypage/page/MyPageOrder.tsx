@@ -3,35 +3,49 @@ import { useAuthStore } from "../../../../store/useAuthStore";
 import { fetchCheckout } from "../../../../api/fetchData";
 import toast from "react-hot-toast";
 import { OrderItem } from "../../../../components/Item";
-import { Link } from "react-router";
-import { PackageOpen } from "lucide-react";
+import { Link, useNavigate } from "react-router";
+import { Loader2, PackageOpen } from "lucide-react";
 import { OrderSkeleton } from "../../../../components/Skeleton";
+import { useUserOrderQuery } from "../../../../hook/order/useOrderQuery";
+import { useInView } from "react-intersection-observer";
 
 export default function MyPageOrder() {
   const { user } = useAuthStore();
-  const [orderList, setOrderList] = useState<Order[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const navigate = useNavigate();
+  const { ref, inView } = useInView({ threshold: 0.5 });
 
   useEffect(() => {
-    const fetchOrder = async () => {
-      if (!user) return;
+    if (!user) {
+      toast.error("회원정보를 찾을 수 없습니다. 홈페이지로 돌아갑니다.");
+      navigate("/");
+      return;
+    }
+  }, [user]);
 
-      try {
-        setIsLoading(true);
+  const {
+    data,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    isLoading,
+    error,
+  } = useUserOrderQuery({ id: user?.id, name: user?.name, call: user?.call });
 
-        const { data } = await fetchCheckout({ buyerId: user.id });
+  useEffect(() => {
+    if (inView && hasNextPage && !isFetchingNextPage) {
+      fetchNextPage();
+    }
+  }, [inView, hasNextPage, isFetchingNextPage, fetchNextPage]);
 
-        setOrderList(data);
-      } catch (error) {
-        toast.error("일치하는 주문 내역이 없습니다.");
-        return;
-      } finally {
-        setIsLoading(false);
-      }
-    };
+  useEffect(() => {
+    if (error) {
+      toast.error("주문 내역을 불러오는 중 오류가 발생했습니다.", {
+        id: "read-order-error",
+      });
+    }
+  }, [error]);
 
-    fetchOrder();
-  }, [user?.id]);
+  const orders = data?.pages.flatMap((page) => page.data) ?? [];
 
   if (isLoading) {
     return (
@@ -47,15 +61,22 @@ export default function MyPageOrder() {
 
   return (
     <>
-      {!isLoading && orderList.length > 0 ? (
-        <ul className="flex flex-col gap-5">
-          {isLoading}
-          {orderList.map((order: Order) => (
-            <li key={order.id}>
-              <OrderItem order={order} />
-            </li>
-          ))}
-        </ul>
+      {!isLoading && orders.length > 0 ? (
+        <>
+          <ul className="flex flex-col gap-5">
+            {orders.map((order: Order) => (
+              <li key={order.id}>
+                <OrderItem order={order} />
+              </li>
+            ))}
+          </ul>
+
+          <div ref={ref} className="py-5 flex justify-center">
+            {isFetchingNextPage && (
+              <Loader2 className="animate-spin text-(--ink-sub)" size={24} />
+            )}
+          </div>
+        </>
       ) : (
         <div className="border border-dashed border-(--line) py-23 px-5 flex flex-col items-center">
           <PackageOpen strokeWidth={1} size={40} stroke="var(--muted)" />

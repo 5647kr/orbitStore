@@ -1,12 +1,15 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createInquiry } from "../../api/inquiry/inquiryAPI";
 import toast from "react-hot-toast";
 
 export default function useInquiryMutation() {
+  const queryClient = useQueryClient();
+
   return useMutation({
     mutationKey: ["inquiry"],
     mutationFn: (form: CreateInquiry) => createInquiry(form),
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["inquiry"] });
       toast.success("문의가 정상적으로 접수되었습니다.");
     },
     onError: () => {
