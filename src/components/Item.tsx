@@ -57,8 +57,61 @@ export function ProductItem(product: Product) {
   );
 }
 
-export function EventItem() {
-  return <div>Event</div>;
+export function EventItem(event: Event) {
+  const beforeEndDay = Math.ceil(
+    (new Date(event.endDate).getTime() - Date.now()) / (1000 * 60 * 60 * 24),
+  );
+  const beforeStartDay = Math.ceil(
+    (new Date(event.startDate).getTime() - Date.now()) / (1000 * 60 * 60 * 24),
+  );
+
+  const isUpcoming = beforeStartDay > 0;
+  const isEnded = beforeEndDay < 0;
+
+  const statusText = isUpcoming ? "예정" : isEnded ? "종료" : "진행 중";
+
+  return (
+    <div className="group border border-(--line) hover:border-(--ink) transition-colors duration-500 ">
+      {/* 이미지 */}
+      <div className="w-full aspect-video relative overflow-hidden">
+        <img
+          src={event.img}
+          alt={event.title}
+          className="w-full object-cover aspect-video transition-transform duration-500 group-hover:scale-120"
+        />
+        {/* 상태 */}
+        <div
+          className={`border py-px px-2 bg-(--bg) absolute top-5 left-5 ${isUpcoming ? "border-(--brass) text-(--brass)" : isEnded ? "border-(--muted) text-(--muted)" : "border-(--ok) text-(--ok)"}`}
+        >
+          <span
+            className="text-xs"
+          >
+            {statusText}
+          </span>
+        </div>
+        {/* 카테고리 */}
+        <div className="border border-(--line) py-px px-2 bg-(--ink-soft) absolute top-5 right-5">
+          <span className="text-xs text-(--bg)">{event.category}</span>
+        </div>
+      </div>
+
+      {/* 내용 */}
+      <div className="bg-(--bg) p-5 pb-10">
+        {/* 날짜 */}
+        <div className="text-(--muted) text-xs mb-2">
+          <span>{event.startDate}</span> ~<span>{event.endDate}</span>
+        </div>
+        {/* 타이틀 */}
+        <h2 className="fraunces text-base font-bold mb-2">{event.title}</h2>
+        {/* 내용 */}
+        <p className="ibm text-sm text-(--ink-soft) mb-3 line-clamp-2 break-keep">
+          {event.desc}
+        </p>
+        {/* 카테고리 */}
+        <span className="text-xs text-(--ink-soft)">{event.category}</span>
+      </div>
+    </div>
+  );
 }
 
 export function OrderItem({ order }: { order: Order }) {
