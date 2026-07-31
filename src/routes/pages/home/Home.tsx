@@ -127,7 +127,7 @@ export default function Home() {
 
         {/* 3가지 유형 */}
         <div className="mt-10">
-          <ul className="flex flex-wrap gap-10">
+          <ul className="grid grid-cols-2 lg:grid-cols-3 gap-10">
             <li className="group border border-(--line) hover:border-(--navy) duration-500 transition-colors">
               <button
                 type="button"
