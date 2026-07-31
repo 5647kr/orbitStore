@@ -1,5 +1,5 @@
-import { useAuthStore } from "../store/useAuthStore";
-import supabase from "../supabase";
+import { useAuthStore } from "../../store/auth/useAuthStore";
+import supabase from "../../supabase";
 
 export async function signupAuth(signupForm: SignupForm) {
   const { data, error } = await supabase.auth.signUp({

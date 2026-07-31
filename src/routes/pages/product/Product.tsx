@@ -57,7 +57,7 @@ export default function Product() {
                   <input
                     type="radio"
                     value="전체"
-                    name={filter.category}
+                    name="category"
                     className="hidden"
                     checked={filter.category === "전체"}
                     onChange={setFilter}
@@ -72,7 +72,7 @@ export default function Product() {
                   <input
                     type="radio"
                     value="굴절망원경"
-                    name={filter.category}
+                    name="category"
                     className="hidden"
                     checked={filter.category === "굴절망원경"}
                     onChange={setFilter}
@@ -87,7 +87,7 @@ export default function Product() {
                   <input
                     type="radio"
                     value="반사망원경"
-                    name={filter.category}
+                    name="category"
                     className="hidden"
                     checked={filter.category === "반사망원경"}
                     onChange={setFilter}
@@ -102,7 +102,7 @@ export default function Product() {
                   <input
                     type="radio"
                     value="돕소니안"
-                    name={filter.category}
+                    name="category"
                     className="hidden"
                     checked={filter.category === "돕소니안"}
                     onChange={setFilter}
@@ -114,7 +114,7 @@ export default function Product() {
           {/* 정렬 카테고리 */}
           <div>
             <select
-              name={filter.sort}
+              name="sort"
               className="py-2 px-4 border border-(--line) focus:outline-none cursor-pointer"
               onChange={setFilter}
             >

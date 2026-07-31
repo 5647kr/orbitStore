@@ -14,4 +14,5 @@ interface Product {
   brand: string;
   amount: number;
   desc: string;
+  popular: number
 }

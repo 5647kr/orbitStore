@@ -7,11 +7,13 @@ export async function readGuestInquiry(form: ReadGuest) {
     url = url
       .eq("id", form.id)
       .eq("name", form.name)
-      .eq("call", form.call);
+      .eq("call", form.call)
+      .order("created_at", { ascending: false });
   } else if (form.name && form.call) {
     url = url
       .eq("name", form.name)
-      .eq("call", form.call);
+      .eq("call", form.call)
+      .order("created_at", { ascending: false });
   }
 
   const { data, error } = await url;

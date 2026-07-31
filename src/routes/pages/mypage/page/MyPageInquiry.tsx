@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useAuthStore } from "../../../../store/useAuthStore";
+import { useAuthStore } from "../../../../store/auth/useAuthStore";
 import toast from "react-hot-toast";
 import { Loader2, MessageCircleQuestionMark } from "lucide-react";
 import { Link, useNavigate } from "react-router";
@@ -10,7 +10,7 @@ export default function MyPageInquiry() {
   const { user } = useAuthStore();
   const navigate = useNavigate();
   const { ref, inView } = useInView({ threshold: 0.5 });
-  const [findInquiry, setFindInquiry] = useState<Inquiry | null>(null);
+  const [findInquiry, setFindInquiry] = useState<ReadInquiry | null>(null);
 
   useEffect(() => {
     if (!user) {
@@ -104,7 +104,7 @@ export default function MyPageInquiry() {
               </tr>
             </thead>
             <tbody>
-              {inquiry.map((item: Inquiry) => (
+              {inquiry.map((item: ReadInquiry) => (
                 <tr
                   key={item.id}
                   className="border-b border-(--line) hover:bg-(--surface)"

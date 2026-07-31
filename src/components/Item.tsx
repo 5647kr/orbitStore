@@ -24,6 +24,13 @@ export function ProductItem(product: Product) {
             alt={product.title}
             className="w-full h-full align-top"
           />
+          {product.amount < 4 && (
+            <span
+              className={`absolute top-5 right-5 py-2 px-4 border text-xs ${product.amount <= 0 ? "border-(--muted) text-(--muted)" : "border-(--danger) text-(--danger)"}`}
+            >
+              {product.amount <= 0 ? "품절" : "품절 임박"}
+            </span>
+          )}
         </Link>
       </div>
 
@@ -83,11 +90,7 @@ export function EventItem(event: Event) {
         <div
           className={`border py-px px-2 bg-(--bg) absolute top-5 left-5 ${isUpcoming ? "border-(--brass) text-(--brass)" : isEnded ? "border-(--muted) text-(--muted)" : "border-(--ok) text-(--ok)"}`}
         >
-          <span
-            className="text-xs"
-          >
-            {statusText}
-          </span>
+          <span className="text-xs">{statusText}</span>
         </div>
         {/* 카테고리 */}
         <div className="border border-(--line) py-px px-2 bg-(--ink-soft) absolute top-5 right-5">
@@ -114,7 +117,7 @@ export function EventItem(event: Event) {
   );
 }
 
-export function OrderItem({ order }: { order: Order }) {
+export function OrderItem({ order }: { order: ReadOrder }) {
   const [showDetail, setShowDetail] = useState(false);
 
   const totalAmount = order.items.reduce((acc, item) => acc + item.quantity, 0);
@@ -313,7 +316,7 @@ hover:after:w-6 hover:after:h-6 hover:after:border-(--brass)
   );
 }
 
-export function InquiryItem({ inquiry }: { inquiry: Inquiry }) {
+export function InquiryItem({ inquiry }: { inquiry: ReadInquiry }) {
   const [showDetail, setShowDetail] = useState(false);
 
   const toggleDetail = () => {

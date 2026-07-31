@@ -1,8 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate, useParams } from "react-router";
 import { Copy, Minus, Plus } from "lucide-react";
-
-import { useCompareStore } from "../../../store/useCompareStore";
+import { useCompareStore } from "../../../store/compare/useCompareStore";
 import { useProductQuery } from "../../../hook/product/useProductQuery";
 import toast from "react-hot-toast";
 import { ProductDetailSkeleton } from "../../../components/Skeleton";
@@ -40,6 +39,7 @@ export default function ProductDetail() {
       aperture: data?.aperture,
       apertureRatio: data?.apertureRatio,
       quantity: count,
+      amount: data?.amount,
     });
 
     if (window.confirm("장바구니에 담겼습니다. 장바구니로 이동하시겠습니까?")) {
@@ -60,6 +60,7 @@ export default function ProductDetail() {
         aperture: data?.aperture,
         apertureRatio: data?.apertureRatio,
         quantity: count,
+        amount: data?.amount,
       },
     ]);
 
@@ -84,10 +85,10 @@ export default function ProductDetail() {
         </div>
 
         {/* 제품 정보란 */}
-        <div className="flex gap-16">
+        <div className="flex flex-col lg:flex-row gap-16">
           {/* 이미지 */}
           <div
-            className="w-full max-w-125 max-h-125 aspect-square bg-(--surface) mb-4 flex justify-center items-center relative before:absolute before:w-4.5 before:h-4.5 before:top-2.5 before:left-2.5 before:border-t-2 before:border-l-2 before:border-(--navy) before:transition-all before:duration-250
+            className="w-full lg:max-w-125 lg:max-h-125 aspect-square bg-(--surface) mb-4 flex justify-center items-center relative before:absolute before:w-4.5 before:h-4.5 before:top-2.5 before:left-2.5 before:border-t-2 before:border-l-2 before:border-(--navy) before:transition-all before:duration-250
       
       after:absolute after:w-4.5 after:h-4.5 after:bottom-2.5 after:right-2.5 after:border-b-2 after:border-r-2 after:border-(--navy) after:transition-all after:duration-250
       
@@ -95,7 +96,7 @@ export default function ProductDetail() {
       hover:after:w-6 hover:after:h-6 hover:after:border-(--brass)
       "
           >
-            <img src={data.img} alt={data.title} />
+            <img src={data.img} alt={data.title} className="" />
           </div>
 
           <div className="w-full">
@@ -117,9 +118,18 @@ export default function ProductDetail() {
             {/* 제품명 */}
             <h2 className="fraunces mt-2.5 text-3xl">{data.title}</h2>
             {/* 가격 */}
-            <strong className="fraunces block text-3xl mt-4.5">
-              ₩{data.price.toLocaleString("ko-KR")}
-            </strong>
+            <div>
+              <strong className="fraunces block text-3xl mt-4.5">
+                ₩{data.price.toLocaleString("ko-KR")}
+              </strong>
+              {data.amount < 4 && (
+                <strong className="text-(--danger) block mt-px">
+                  {data.amount <= 0
+                    ? "품절"
+                    : `품절 임박 ${data.amount}개 남음`}
+                </strong>
+              )}
+            </div>
             {/* 설명 */}
             <p className="fz-sm break-keep mt-4.5 text-(--ink-soft)">
               {data.desc}
@@ -187,17 +197,19 @@ export default function ProductDetail() {
               </div>
               <button
                 type="button"
-                className="flex-1 border border-(--line) py-3.5 px-7 text-sm hover:border-(--brass) hover:text-(--brass)"
+                disabled={data.amount <= 0}
+                className={`flex-1 border py-3.5 px-7 text-sm ${data.amount > 0 ? "border-(--line) hover:border-(--brass) hover:text-(--brass)" : "border-(--muted) text-(--muted)"}`}
                 onClick={handleAddCart}
               >
                 장바구니
               </button>
               <button
                 type="button"
+                disabled={data.amount <= 0}
                 onClick={handleCheckout}
-                className="flex-1 border border-(--brass) bg-(--brass) text-(--bg) py-3.5 px-7 text-sm"
+                className={`flex-1 border py-3.5 px-7 text-sm ${data.amount > 0 ? "cursor-pointer border-(--brass) bg-(--brass) text-(--bg)" : "cursor-not-allowed border-(--muted) bg-(--muted) text-(--bg)"}`}
               >
-                바로 구매
+                {data.amount > 0 ? "바로 구매" : "품절"}
               </button>
             </div>
           </div>

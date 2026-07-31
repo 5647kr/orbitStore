@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { logoutAuth } from "../api/auth";
+import { logoutAuth } from "../../api/auth/auth";
 
 interface AuthStore {
   user: User | null;

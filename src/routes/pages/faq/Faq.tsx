@@ -2,12 +2,12 @@ import { useEffect, useState } from "react";
 import Hero from "../../../components/Hero";
 import { Loader2, Minus, Plus } from "lucide-react";
 import { Link } from "react-router";
-import { useFaqFilterStore } from "../../../store/faq/useFaqFilterStore";
 import { useAllFaqQuery } from "../../../hook/faq/useFaqQuery";
 import { useInView } from "react-intersection-observer";
 import toast from "react-hot-toast";
 
 export default function Faq() {
+  const [category, setCategory] = useState("전체");
   const {
     data,
     fetchNextPage,
@@ -15,13 +15,12 @@ export default function Faq() {
     isFetchingNextPage,
     isLoading,
     error,
-  } = useAllFaqQuery();
-  const { category, setFilter } = useFaqFilterStore();
+  } = useAllFaqQuery(category);
   const [activeItem, setActiveItem] = useState<string | null>(null);
   const { ref, inView } = useInView({ threshold: 0.5 });
 
   const handleFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFilter(e.target.value);
+    setCategory(e.target.value);
   };
 
   const handleActiveItem = (id: string) => {

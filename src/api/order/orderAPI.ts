@@ -19,6 +19,7 @@ export async function readAllOrder(
     .eq("buyerId", id)
     .eq("buyerName", name)
     .eq("buyerCall", call)
+    .order("created_at", { ascending: false })
     .range(page * pageNum, (page * pageNum) + pageNum - 1);
 
   if (error) throw error;

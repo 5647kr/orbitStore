@@ -29,7 +29,11 @@ button,
 a {
   cursor: pointer;
 }
-/* 
-a {
-  display: block;
-} */
+
+.ibm {
+  font-family: "IBM Plex Sans";
+}
+
+.fraunces {
+  font-family: "Fraunces";
+}

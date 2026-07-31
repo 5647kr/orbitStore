@@ -9,16 +9,7 @@ interface CheckoutForm {
     name: string;
     postCode: string;
   };
-  items: {
-    aperture: string;
-    apertureRatio: string;
-    category: string;
-    id: string;
-    img: string;
-    price: number;
-    quantity: number;
-    title: string;
-  }[];
+  items: CheckoutItem[];
   totalPrice: number;
 }
 
@@ -31,9 +22,24 @@ interface CreateOrder {
   buyerDetailAddress: string;
   buyerCall: string;
   price: number;
-  items: CartList[];
+  items: CheckoutItem[];
   memo?: string;
   pg_tx_id: string | null;
   deliver: string;
   status: string;
+}
+
+interface ReadOrder extends CreateOrder {
+  created_at: string;
+}
+
+interface CheckoutItem {
+  id: string;
+  img: string;
+  title: string;
+  price: number;
+  category: string;
+  aperture: string;
+  apertureRatio: string;
+  quantity: number;
 }

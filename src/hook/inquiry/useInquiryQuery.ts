@@ -5,7 +5,7 @@ export function useUserInquiryQuery(
   { name, call }: { name?: string; call?: string },
 ) {
   return useInfiniteQuery({
-    queryKey: ["inquiry", name, call],
+    queryKey: ["inquiry"],
     queryFn: ({ pageParam }) => {
       return readAllInquiry({
         page: pageParam,
