@@ -1,6 +1,6 @@
 import { NavLink, Outlet, useLocation, useNavigate } from "react-router";
 import Hero from "../../../components/Hero";
-import { useAuthStore } from "../../../store/useAuthStore";
+import { useAuthStore } from "../../../store/auth/useAuthStore";
 import { useEffect } from "react";
 import toast from "react-hot-toast";
 

@@ -39,7 +39,7 @@ export async function readAllProduct(
   return { data, nextPage };
 }
 
-// read
+// readOne
 export async function readProduct({ id }: { id: string }) {
   const { data, error } = await supabase
     .from("products")
@@ -50,4 +50,45 @@ export async function readProduct({ id }: { id: string }) {
   if (error) throw error;
 
   return data;
+}
+
+// readPopular
+export async function readPopularProduct() {
+  const { data, error } = await supabase
+    .from("products")
+    .select("*")
+    .order("popular", { ascending: false })
+    .range(1, 4);
+
+  if (error) throw error;
+
+  return data;
+}
+
+export async function updateProductStock(
+  items: { id: string; quantity: number }[],
+) {
+  for (const item of items) {
+    const { data: product, error: fetchError } = await supabase
+      .from("products")
+      .select("amount")
+      .eq("id", item.id)
+      .single();
+
+    if (fetchError) throw fetchError;
+
+    const currentStock = product.amount ?? 0;
+    const nextStock = currentStock - item.quantity;
+
+    if (nextStock < 0) {
+      throw new Error("재고가 부족합니다.");
+    }
+
+    const { error: updateError } = await supabase
+      .from("products")
+      .update({ amount: nextStock })
+      .eq("id", item.id);
+
+    if (updateError) throw updateError;
+  }
 }

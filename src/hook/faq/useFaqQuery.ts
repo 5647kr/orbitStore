@@ -1,10 +1,7 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
-import { useFaqFilterStore } from "../../store/faq/useFaqFilterStore";
 import { readAllFaq } from "../../api/faq/faqAPI";
 
-export function useAllFaqQuery() {
-  const { category } = useFaqFilterStore();
-
+export function useAllFaqQuery(category: string) {
   return useInfiniteQuery({
     queryKey: ["faqs", category],
     queryFn: ({ pageParam }) => {

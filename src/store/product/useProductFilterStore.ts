@@ -5,6 +5,7 @@ interface ProductFilterStore {
   setFilter: (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
   ) => void;
+  setCategory: (category: string) => void;
 }
 
 export const useProductFilterStore = create<ProductFilterStore>((set) => ({
@@ -19,4 +20,11 @@ export const useProductFilterStore = create<ProductFilterStore>((set) => ({
       },
     }));
   },
+  setCategory: (category) =>
+    set((state) => ({
+      filter: {
+        ...state.filter,
+        category,
+      },
+    })),
 }));

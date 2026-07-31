@@ -26,6 +26,8 @@ export default function Cart() {
 
   const isCartEmpty = cartList.length === 0;
 
+  console.log(cartList)
+
   return (
     <>
       <Hero
@@ -107,6 +109,7 @@ hover:after:w-6 hover:after:h-6 hover:after:border-(--brass)
                           <div className="w-full max-w-31 h-12 border border-(--line) flex items-center bg-(--bg)">
                             <button
                               type="button"
+                              disabled={item.quantity <= 1}
                               onClick={() =>
                                 updateQuantity(item.id, item.quantity - 1)
                               }
@@ -119,6 +122,7 @@ hover:after:w-6 hover:after:h-6 hover:after:border-(--brass)
                             </span>
                             <button
                               type="button"
+                              disabled={item.quantity >= item.amount}
                               onClick={() =>
                                 updateQuantity(item.id, item.quantity + 1)
                               }

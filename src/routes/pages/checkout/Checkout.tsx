@@ -2,23 +2,13 @@ import { useMemo, useState } from "react";
 import Hero from "../../../components/Hero";
 import AddressModal from "../../../components/AddressModal";
 import type { Address } from "react-daum-postcode";
-import { useAuthStore } from "../../../store/useAuthStore";
+import { useAuthStore } from "../../../store/auth/useAuthStore";
 import { useNavigate } from "react-router";
 import toast from "react-hot-toast";
 import { useCheckoutMutation } from "../../../hook/checkout/useCheckoutMutation";
 import { useCheckoutStore } from "../../../store/checkout/useCheckoutStore";
 import { useCartStore } from "../../../store/cart/useCartStore";
 import { useOrderStore } from "../../../store/order/useOrderStore";
-
-interface CheckoutForm {
-  id: string;
-  name: string;
-  call: string;
-  postCode: string;
-  basicAddress: string;
-  detailAddress: string;
-  memo: string;
-}
 
 export default function Checkout() {
   const { user } = useAuthStore();

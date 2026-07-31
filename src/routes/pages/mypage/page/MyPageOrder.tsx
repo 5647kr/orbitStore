@@ -1,6 +1,5 @@
-import { useEffect, useState } from "react";
-import { useAuthStore } from "../../../../store/useAuthStore";
-import { fetchCheckout } from "../../../../api/fetchData";
+import { useEffect } from "react";
+import { useAuthStore } from "../../../../store/auth/useAuthStore";
 import toast from "react-hot-toast";
 import { OrderItem } from "../../../../components/Item";
 import { Link, useNavigate } from "react-router";
@@ -64,7 +63,7 @@ export default function MyPageOrder() {
       {!isLoading && orders.length > 0 ? (
         <>
           <ul className="flex flex-col gap-5">
-            {orders.map((order: Order) => (
+            {orders.map((order: ReadOrder) => (
               <li key={order.id}>
                 <OrderItem order={order} />
               </li>

@@ -1,8 +1,10 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import { createCheckout } from "../../api/checkout/checkoutAPI";
 
 export function useCheckoutMutation() {
+  const queryClient = useQueryClient();
+
   return useMutation({
     mutationKey: ["checkout"],
     mutationFn: async (
@@ -16,6 +18,7 @@ export function useCheckoutMutation() {
       return response;
     },
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["orders"] });
       toast.success("결제가 정상적으로 완료되었습니다.");
     },
     onError: () => {

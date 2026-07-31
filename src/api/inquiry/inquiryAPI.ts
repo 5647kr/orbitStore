@@ -28,6 +28,7 @@ export async function readAllInquiry(
     .select("*", { count: "exact" })
     .eq("name", name)
     .eq("call", call)
+    .order("created_at", { ascending: false })
     .range(page * pageNum, (page * pageNum) + pageNum - 1);
 
   if (error) throw error;

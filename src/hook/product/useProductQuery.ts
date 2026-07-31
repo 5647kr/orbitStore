@@ -1,6 +1,10 @@
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { useProductFilterStore } from "../../store/product/useProductFilterStore";
-import { readAllProduct, readProduct } from "../../api/product/productAPI";
+import {
+  readAllProduct,
+  readPopularProduct,
+  readProduct,
+} from "../../api/product/productAPI";
 
 export function useAllProductQuery() {
   const { filter } = useProductFilterStore();
@@ -30,5 +34,12 @@ export function useProductQuery(id: string) {
         id: id,
       });
     },
+  });
+}
+
+export function usePopularProduct() {
+  return useQuery({
+    queryKey: ["products"],
+    queryFn: () => readPopularProduct(),
   });
 }

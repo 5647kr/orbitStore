@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import useInquiryMutation from "../../../hook/inquiry/useInquiryMutation";
-import { useInquiryStore } from "../../../store/useInquiryStore";
+import { useInquiryStore } from "../../../store/inquiry/useInquiryStore";
 
 export default function Inquiry() {
   const initForm = {

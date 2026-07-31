@@ -29,7 +29,7 @@ export default function GuestInquiry() {
 
       <section className="max-w-7xl p-4 mx-auto py-5">
         <ul className="flex flex-col gap-5">
-          {inquiries.map((inquiry: Inquiry) => (
+          {inquiries.map((inquiry: ReadInquiry) => (
             <li key={inquiry.id}>
               <InquiryItem inquiry={inquiry} />
             </li>

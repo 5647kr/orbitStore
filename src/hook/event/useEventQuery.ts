@@ -1,9 +1,13 @@
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
-import { readAllEvent, readEvent } from "../../api/event/eventAPI";
+import {
+  readAllEvent,
+  readEvent,
+  readOpenEvent,
+} from "../../api/event/eventAPI";
 
 export function useAllEventQuery() {
   return useInfiniteQuery({
-    queryKey: ["events"],
+    queryKey: ["events", "all"],
     queryFn: ({ pageParam }) => {
       return readAllEvent({
         page: pageParam,
@@ -12,7 +16,7 @@ export function useAllEventQuery() {
     },
     initialPageParam: 0,
     getNextPageParam: (lastPage) => lastPage.nextPage,
-    staleTime: 1000 * 60 * 10,
+    staleTime: 1000 * 60 * 5,
     gcTime: 1000 * 60 * 10,
   });
 }
@@ -26,5 +30,12 @@ export function useEventQuery(id: string) {
       });
     },
     enabled: !!id,
+  });
+}
+
+export function useOpenEventQuery() {
+  return useQuery({
+    queryKey: ["events", "open"],
+    queryFn: () => readOpenEvent(),
   });
 }

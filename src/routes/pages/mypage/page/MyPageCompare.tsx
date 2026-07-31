@@ -1,5 +1,5 @@
 import { Copy } from "lucide-react";
-import { useCompareStore } from "../../../../store/useCompareStore";
+import { useCompareStore } from "../../../../store/compare/useCompareStore";
 import { Link } from "react-router";
 
 export default function MyPageCompare() {

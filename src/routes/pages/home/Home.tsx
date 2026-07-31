@@ -1,6 +1,24 @@
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
+import { usePopularProduct } from "../../../hook/product/useProductQuery";
+import { EventSkeleton, ProductSkeleton } from "../../../components/Skeleton";
+import { EventItem, ProductItem } from "../../../components/Item";
+import { useProductFilterStore } from "../../../store/product/useProductFilterStore";
+import { useOpenEventQuery } from "../../../hook/event/useEventQuery";
 
 export default function Home() {
+  const navigate = useNavigate();
+  const { setCategory } = useProductFilterStore();
+  const { data: products, isLoading: productLoading } = usePopularProduct();
+  const { data: events, isLoading: eventLoading } = useOpenEventQuery();
+
+  const handleProductType = (category: string) => {
+    setCategory(category);
+    navigate("/product");
+  };
+
+  console.log("product:", products);
+  console.log("event:", events);
+
   return (
     <>
       {/* OFFICIAL PARTNER STORE */}
@@ -62,7 +80,7 @@ export default function Home() {
           </div>
           <div className="flex-1">
             <img
-              src="https://images.unsplash.com/photo-1506703719100-a0f3a48c0f86?q=80&w=1600&auto=format&fit=crop"
+              src="https://images.unsplash.com/photo-1506703719100-a0f3a48c0f86"
               alt="세계의 광학 브랜드, ORBITSTORE이 한 곳에
               모았습니다."
             />
@@ -109,13 +127,57 @@ export default function Home() {
 
         {/* 3가지 유형 */}
         <div className="mt-10">
-          <ul className="flex gap-5">
-            <li className="flex flex-col items-center">
-              <div>
-                {/* <img src="" alt="" /> */}
-              </div>
-              <span className="text-(--muted) text-sm">REFRACTOR</span>
-              <h3 className="text-base">굴절망원경</h3>
+          <ul className="flex flex-wrap gap-10">
+            <li className="group border border-(--line) hover:border-(--navy) duration-500 transition-colors">
+              <button
+                type="button"
+                className="p-10 flex flex-col items-start gap-2"
+                onClick={() => handleProductType("굴절망원경")}
+              >
+                <div>
+                  <img
+                    className="transition-transform duration-500 group-hover:scale-110"
+                    src="https://res.cloudinary.com/dx71aeltq/image/upload/v1779691709/StarSense_Explorer_DX_102AZ.png"
+                    alt="굴절망원경"
+                  />
+                </div>
+                <span className="text-(--muted) text-sm">REFRACTOR</span>
+                <h3 className="text-base">굴절망원경</h3>
+              </button>
+            </li>
+            <li className="group border border-(--line) hover:border-(--navy) duration-500 transition-colors">
+              <button
+                type="button"
+                className="p-10 flex flex-col items-start gap-2"
+                onClick={() => handleProductType("반사망원경")}
+              >
+                <div>
+                  <img
+                    className="transition-transform duration-500 group-hover:scale-110"
+                    src="https://res.cloudinary.com/dx71aeltq/image/upload/v1779691698/Advanced_Telescope_150-750_EQ-320.png"
+                    alt="반사망원경"
+                  />
+                </div>
+                <span className="text-(--muted) text-sm">REFRACTOR</span>
+                <h3 className="text-base">반사망원경</h3>
+              </button>
+            </li>
+            <li className="group border border-(--line) hover:border-(--navy) duration-500 transition-colors">
+              <button
+                type="button"
+                className="p-10 flex flex-col items-start gap-2"
+                onClick={() => handleProductType("돕소니안")}
+              >
+                <div>
+                  <img
+                    className="transition-transform duration-500 group-hover:scale-110"
+                    src="https://res.cloudinary.com/dx71aeltq/image/upload/v1779691694/N_254_1200_Pyrex_Skyliner_Classic.png"
+                    alt="돕소니안"
+                  />
+                </div>
+                <span className="text-(--muted) text-sm">REFRACTOR</span>
+                <h3 className="text-base">돕소니안</h3>
+              </button>
             </li>
           </ul>
         </div>
@@ -144,13 +206,19 @@ export default function Home() {
           {/* 제품목록 */}
           <div className="mt-10">
             <ul className="grid grid-cols-2 gap-5 lg:grid-cols-4">
-              <li className="flex flex-col items-center">
-                <div>
-                  {/* <img src="" alt="" /> */}
-                </div>
-                <span className="text-(--muted) text-sm">REFRACTOR</span>
-                <h3 className="text-base">굴절망원경</h3>
-              </li>
+              {productLoading &&
+                Array.from({ length: 4 }).map((_, index: number) => (
+                  <li key={index}>
+                    <ProductSkeleton />
+                  </li>
+                ))}
+              {!productLoading &&
+                products &&
+                products.map((item: Product) => (
+                  <li key={item.id}>
+                    <ProductItem {...item} />
+                  </li>
+                ))}
             </ul>
           </div>
         </div>
@@ -230,13 +298,19 @@ export default function Home() {
           {/* 이벤트 목록 */}
           <div className="mt-10">
             <ul className="grid grid-cols-2 gap-5 lg:grid-cols-4">
-              <li className="flex flex-col items-center">
-                <div>
-                  {/* <img src="" alt="" /> */}
-                </div>
-                <span className="text-(--muted) text-sm">REFRACTOR</span>
-                <h3 className="text-base">굴절망원경</h3>
-              </li>
+              {eventLoading &&
+                Array.from({ length: 4 }).map((_, index: number) => (
+                  <li key={index}>
+                    <EventSkeleton />
+                  </li>
+                ))}
+              {!eventLoading &&
+                events &&
+                events.map((item: Event) => (
+                  <li key={item.id}>
+                    <EventItem {...item} />
+                  </li>
+                ))}
             </ul>
           </div>
         </div>

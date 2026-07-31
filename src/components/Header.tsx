@@ -5,16 +5,15 @@ import {
   Menu,
   ShoppingCart,
   UserRound,
-  UserRoundCog,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link, NavLink, useLocation } from "react-router";
-import { useAuthStore } from "../store/useAuthStore";
+import { useAuthStore } from "../store/auth/useAuthStore";
 
 export default function Header() {
   const { pathname } = useLocation();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { user, isLoggedIn, setLogout } = useAuthStore();
+  const { isLoggedIn, setLogout } = useAuthStore();
 
   const toggleMenu = () => {
     setIsMenuOpen((isMenuOpen) => !isMenuOpen);
@@ -117,18 +116,6 @@ export default function Header() {
           <div className="flex gap-3.5">
             {isLoggedIn ? (
               <>
-                {user && user.type === "admin" && (
-                  <button
-                    type="button"
-                    className="flex border rounded-full border-(--line) w-9 h-9 justify-center items-center hover:border-(--ink)"
-                  >
-                    <UserRoundCog
-                      stroke="var(--navy)"
-                      strokeWidth="1"
-                      size={16}
-                    />
-                  </button>
-                )}
                 <Link
                   to="/mypage/order"
                   className={`flex border rounded-full w-9 h-9 justify-center items-center hover:border-(--ink) ${myPageActive ? "border-(--ink)" : "border-(--line)"}`}

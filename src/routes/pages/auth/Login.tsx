@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router";
-import { loginAuth } from "../../../api/auth";
+import { loginAuth } from "../../../api/auth/auth";
 
 export default function Login() {
   const navigate = useNavigate();

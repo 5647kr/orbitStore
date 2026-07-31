@@ -2,8 +2,8 @@ import { Outlet, ScrollRestoration } from "react-router";
 import Header from "../../components/Header";
 import Footer from "../../components/Footer";
 import { useEffect } from "react";
-import { getUser } from "../../api/auth";
 import { Toaster } from "react-hot-toast";
+import { getUser } from "../../api/auth/auth";
 
 export default function Default() {
   useEffect(() => {

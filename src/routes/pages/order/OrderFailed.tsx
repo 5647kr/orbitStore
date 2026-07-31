@@ -1,6 +1,5 @@
-import { AlertTriangle, Copy, X } from "lucide-react";
-import { Link, useNavigate } from "react-router";
-import toast from "react-hot-toast";
+import { X } from "lucide-react";
+import { Link } from "react-router";
 
 export default function OrderFailed() {
   return (
@@ -34,12 +33,16 @@ export default function OrderFailed() {
         </div>
         <div className="p-5 bg-(--bg)">
           <ul>
-            <li className="text-(--ink) text-sm">- 카드 한도 및 잔액을 확인한 뒤 다시 시도해주세요.</li>
-            <li className="text-(--ink) text-sm">- 
-              해외 결제 차단 설정이 되어 있다면 카드사에 일시 해제를
+            <li className="text-(--ink) text-sm">
+              - 카드 한도 및 잔액을 확인한 뒤 다시 시도해주세요.
+            </li>
+            <li className="text-(--ink) text-sm">
+              - 해외 결제 차단 설정이 되어 있다면 카드사에 일시 해제를
               요청해주세요.
             </li>
-            <li className="text-(--ink) text-sm">- 문제가 반복되면 고객센터(1544-0198)로 문의해주세요.</li>
+            <li className="text-(--ink) text-sm">
+              - 문제가 반복되면 고객센터(1544-0198)로 문의해주세요.
+            </li>
           </ul>
         </div>
       </div>

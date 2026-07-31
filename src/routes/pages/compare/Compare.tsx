@@ -1,6 +1,6 @@
 import { Copy, X } from "lucide-react";
 import Hero from "../../../components/Hero";
-import { useCompareStore } from "../../../store/useCompareStore";
+import { useCompareStore } from "../../../store/compare/useCompareStore";
 import { Link } from "react-router";
 
 export default function Compare() {

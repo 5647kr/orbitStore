@@ -1,5 +1,6 @@
 import PortOne from "@portone/browser-sdk/v2";
 import supabase from "../../supabase";
+import { updateProductStock } from "../product/productAPI";
 
 export async function createCheckout(
   { orderId, form }: { orderId: string; form: CheckoutForm },
@@ -44,6 +45,8 @@ export async function createCheckout(
 
     const orderData = await createOrder(orderForm);
 
+    await updateProductStock(form.items);
+
     return { success: true, data: orderData };
   } catch (error) {
     return { success: false };
@@ -51,7 +54,6 @@ export async function createCheckout(
 }
 
 export async function createOrder(form: CreateOrder) {
-  console.log(form);
   const { data, error } = await supabase
     .from("orders")
     .insert([form])

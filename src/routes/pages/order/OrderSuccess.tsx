@@ -1,6 +1,6 @@
 import { AlertTriangle, CheckIcon, Copy } from "lucide-react";
 import { Link, useNavigate } from "react-router";
-import { useAuthStore } from "../../../store/useAuthStore";
+import { useAuthStore } from "../../../store/auth/useAuthStore";
 import toast from "react-hot-toast";
 import { useOrderStore } from "../../../store/order/useOrderStore";
 
