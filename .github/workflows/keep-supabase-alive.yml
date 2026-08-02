@@ -1,0 +1,31 @@
+name: Keep Supabase Alive
+
+on:
+  schedule:
+    # 매 3일마다 자정(UTC)에 자동으로 실행
+    - cron: "0 0 */3 * *"
+  # GitHub 웹 화면에서 'Run workflow' 버튼으로 수동 테스트 가능하게 함
+  workflow_dispatch:
+
+jobs:
+  ping-supabase:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping Supabase REST API
+        run: |
+          RESPONSE=$(curl -s -w "\nHTTP_STATUS: %{http_code}" -X GET \
+            "${{ secrets.SUPABASE_URL }}/rest/v1/${{ secrets.SUPABASE_TABLE }}?select=*&limit=1" \
+            -H "apikey: ${{ secrets.SUPABASE_ANON_KEY }}" \
+            -H "Authorization: Bearer ${{ secrets.SUPABASE_ANON_KEY }}")
+
+          echo "Response Body & Status:"
+          echo "$RESPONSE"
+
+          # HTTP 상태 코드가 200번대가 아니면 에러로 처리
+          HTTP_STATUS=$(echo "$RESPONSE" | grep "HTTP_STATUS" | awk '{print $2}')
+          if [ "$HTTP_STATUS" -ge 200 ] && [ "$HTTP_STATUS" -lt 300 ]; then
+            echo "Successfully pinged Supabase!"
+          else
+            echo "Failed to ping Supabase. Status: $HTTP_STATUS"
+            exit 1
+          fi
